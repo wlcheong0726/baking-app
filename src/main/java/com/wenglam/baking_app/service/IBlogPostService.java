@@ -8,6 +8,6 @@ public interface IBlogPostService {
 
     List<BlogPost> getAllBlogPosts();
     BlogPost getBlogPostById(Long id);
-    void createBlogPost(BlogPost blogPost);
+    BlogPost createBlogPost(BlogPost blogPost);
     BlogPost updateBlogPost(Long id, BlogPost blogPost);
 }

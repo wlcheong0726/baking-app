@@ -17,8 +17,8 @@ public class BlogPostService implements IBlogPostService {
     private final BlogPostRepository blogPostRepository;
 
     @Override
-    public void createBlogPost(BlogPost blogPost) {
-        blogPostRepository.save(blogPost);
+    public BlogPost createBlogPost(BlogPost blogPost) {
+        return blogPostRepository.save(blogPost);
     }
 
     @Override

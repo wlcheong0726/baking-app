@@ -31,7 +31,7 @@ public class BlogPostController {
     }
 
     @PostMapping
-    public void createBlogPost(@RequestBody BlogPost blogPost) {
-        blogPostService.createBlogPost(blogPost);
+    public BlogPost createBlogPost(@RequestBody BlogPost blogPost) {
+        return blogPostService.createBlogPost(blogPost);
     }
 }
