@@ -82,3 +82,11 @@ FRONTEND:
 
 BACKEND:
 - Updated to return blog post data that's just been saved to database as a confirmation of saving success + data can then be used immdiately by frontend.
+
+## 06 Sept 2025
+FRONTEND:
+- Merged feature/add-new-blog into develop.
+- Added and merged feature/delete-blog into develop, which deletes blog on clicking 'Delete' button on specific blog card.
+
+BACKEND:
+- Added feature/delete-blog and feature/edit-blog
