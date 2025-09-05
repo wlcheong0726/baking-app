@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.wenglam.baking_app.entity.BlogPost;
 import com.wenglam.baking_app.service.IBlogPostService;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,11 +14,7 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-
 
 
 
@@ -53,5 +50,15 @@ public class BlogPostController {
     @PutMapping("/blogpost/{id}")
     public BlogPost editBlogPost(@PathVariable Long id, @RequestBody BlogPost updatedBlogPost) {
         return blogPostService.updateBlogPost(id, updatedBlogPost);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteBlogPost(@PathVariable Long id) {
+        try {
+            blogPostService.deleteBlogPost(id);
+            return new ResponseEntity<>("Blog post with ID " + id + " deleted successfully.", HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
     }
 }

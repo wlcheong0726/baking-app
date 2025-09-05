@@ -8,6 +8,7 @@ import com.wenglam.baking_app.entity.BlogPost;
 import com.wenglam.baking_app.repository.BlogPostRepository;
 import com.wenglam.baking_app.service.IBlogPostService;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -44,5 +45,12 @@ public class BlogPostService implements IBlogPostService {
                 return blogPostRepository.save(existingBlogPost);
             })
             .orElseThrow(() -> new RuntimeException("Blog post not found with id " + id));
+    }
+
+    public void deleteBlogPost(Long id) {
+        if (!blogPostRepository.existsById(id)) {
+            throw new EntityNotFoundException("Unable to delete blog post with ID " + id + ". Blog post cannot be found.");
+        }
+        blogPostRepository.deleteById(id);
     }
 }
