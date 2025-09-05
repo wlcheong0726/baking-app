@@ -60,14 +60,14 @@ Branch: feature/display-all-blogs-on-blogspage
 BACKEND:
 - Set up CORS to allow frontend app to send requests to backend API.
 
-# 27 Aug 2025
+## 27 Aug 2025
 FRONTEND:
 - Merged feature/improve-all-blog-components into develop.
 
 Branch: feature/add-new-blog
 - BlogForm - Added functions to make POST request to insert new blog data to database.
 
-# 29 Aug 2025
+## 29 Aug 2025
 FRONTEND:
 - Merged feature/display-all-blogs-on-blogspage into develop.
 
@@ -75,4 +75,10 @@ BACKEND:
 - Updated .gitignore.
 - Updated README to include basic project info.
 
+## 31 Aug 2025
+FRONTEND:
+- Updated for blog form modal to close when add blog is successful.
+- New blog post data is displayed after successfully being added.
 
+BACKEND:
+- Updated to return blog post data that's just been saved to database as a confirmation of saving success + data can then be used immdiately by frontend.
