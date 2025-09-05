@@ -14,6 +14,9 @@ import java.util.List;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
 
 
 
@@ -33,5 +36,10 @@ public class BlogPostController {
     @PostMapping
     public BlogPost createBlogPost(@RequestBody BlogPost blogPost) {
         return blogPostService.createBlogPost(blogPost);
+    }
+
+    @PutMapping("/{id}")
+    public BlogPost editBlogPost(@PathVariable Long id, @RequestBody BlogPost updatedBlogPost) {
+        return blogPostService.updateBlogPost(id, updatedBlogPost);
     }
 }

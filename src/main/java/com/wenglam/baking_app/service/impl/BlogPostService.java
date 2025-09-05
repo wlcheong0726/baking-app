@@ -33,9 +33,17 @@ public class BlogPostService implements IBlogPostService {
     }
 
     @Override
-    public BlogPost updateBlogPost(Long id, BlogPost blogPost) {
-        // TODO Auto-generated method stub
-        return null;
+    public BlogPost updateBlogPost(Long id, BlogPost updatedBlogPost) {
+        return blogPostRepository.findById(id)
+            .map(existingBlogPost -> {
+                existingBlogPost.setTitle(updatedBlogPost.getTitle());
+                existingBlogPost.setContent(updatedBlogPost.getContent());
+                existingBlogPost.setAuthor(updatedBlogPost.getAuthor());
+                existingBlogPost.setImageUrl(updatedBlogPost.getImageUrl());
+                existingBlogPost.setUpdatedAt(updatedBlogPost.getUpdatedAt());
+                existingBlogPost.setUpdatedBy(updatedBlogPost.getUpdatedBy());
+                return blogPostRepository.save(existingBlogPost);
+            })
+            .orElseThrow(() -> new RuntimeException("Blog post not found with id " + id));
     }
-    
 }

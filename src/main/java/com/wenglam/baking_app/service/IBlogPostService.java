@@ -9,5 +9,5 @@ public interface IBlogPostService {
     List<BlogPost> getAllBlogPosts();
     BlogPost getBlogPostById(Long id);
     BlogPost createBlogPost(BlogPost blogPost);
-    BlogPost updateBlogPost(Long id, BlogPost blogPost);
+    BlogPost updateBlogPost(Long id, BlogPost updatedBlogPost);
 }
