@@ -28,8 +28,7 @@ public class BlogPostService implements IBlogPostService {
 
     @Override
     public BlogPost getBlogPostById(Long id) {
-        // TODO Auto-generated method stub
-        return null;
+        return blogPostRepository.findById(id).orElse(null);
     }
 
     @Override
