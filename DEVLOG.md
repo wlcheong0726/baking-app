@@ -87,6 +87,14 @@ BACKEND:
 FRONTEND:
 - Merged feature/add-new-blog into develop.
 - Added and merged feature/delete-blog into develop, which deletes blog on clicking 'Delete' button on specific blog card.
+- Added feature/edit-new-blog branch.
+- Updated branch so it opens blog form modal with existing blog data for edit, and on submitting, updates blog data - need to rerender blogspage to display updated blog.
 
 BACKEND:
-- Added feature/delete-blog and feature/edit-blog
+- Added develop as default branch.
+- Added and merged feature/delete-blog into develop.
+- Added feature/edit-blog branch.
+
+## 08 Sept 2025
+FRONTEND:
+- Updated edit blog feature so blogs page is rerendered to display newly updated blog data.
