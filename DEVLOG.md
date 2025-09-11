@@ -98,3 +98,11 @@ BACKEND:
 ## 08 Sept 2025
 FRONTEND:
 - Updated edit blog feature so blogs page is rerendered to display newly updated blog data.
+
+## 11 Sept 2025
+FRONTEND:
+- Bug: The frontend incorrectly displayed an error stating it was "unable to create blog" even though the POST request to the backend was successful.
+- Cause: The logic relied solely on the modalIsVisible state to determine whether the modal was being used to add a new blog or edit an existing one. The state was ambiguous and not sufficient to distinguish between the two actions because in both cases, the modalIsVisible is true.
+- Fix: Introduced two new state variables: isAddingNewBlog and isEditingBLog - these explicityly track the modal's purpose, allowing the UI logic to correctly handle success and error states.
+- Result: Blog creation now works as expected and the modal behaviour is more predictable and maintainable.
+- Merged feature/edit-blog to develop.
