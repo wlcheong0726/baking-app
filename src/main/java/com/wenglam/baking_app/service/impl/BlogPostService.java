@@ -29,7 +29,8 @@ public class BlogPostService implements IBlogPostService {
 
     @Override
     public BlogPost getBlogPostById(Long id) {
-        return blogPostRepository.findById(id).orElse(null);
+        return blogPostRepository.findById(id)
+                                    .orElseThrow(() -> new EntityNotFoundException("Blog post with ID " + id + " not found."));
     }
 
     @Override
