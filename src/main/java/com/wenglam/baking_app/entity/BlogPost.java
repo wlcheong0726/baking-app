@@ -22,7 +22,8 @@ public class BlogPost {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    // IDENTITY is a column property that makes column auto-increment its value for each new row
+    // IDENTITY is a column property that makes column auto-increment its value for
+    // each new row
     @Column(name = "id", nullable = false)
     private Long id;
 
@@ -36,11 +37,13 @@ public class BlogPost {
     private String author;
 
     @ColumnDefault("CURRENT_TIMESTAMP") // Default value for created_at column - Hibernate annotation
-    // Database will automatically set this value to the current timestamp when a new row is inserted
-    // only works when generating schema - not during runtime when persisting an entity
+    // Database will automatically set this value to the current timestamp when a
+    // new row is inserted
+    // only works when generating schema - not during runtime when persisting an
+    // entity
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
-   
+
     @ColumnDefault("NULL")
     @Column(name = "updated_at")
     private Instant updatedAt;

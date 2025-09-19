@@ -111,3 +111,9 @@ FRONTEND:
 BACKEND:
 - Created add-tests branch.
 - Created BlogPostServiceTest - added junit tests with mock repository using Mockito to test Service layer business logic.
+
+## 19 Sept 2025
+FRONTEND:
+- Updated styling for blog for consistency and aesthetics.
+- Updated 'Read More' button to make it functional when text length is more than 200.
+- Added a 'Back to Blogs' link in Full Blog page.

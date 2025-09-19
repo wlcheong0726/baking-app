@@ -10,8 +10,6 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.List;
-
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,29 +28,23 @@ public class BlogPostController {
     private final IBlogPostService blogPostService;
 
     @GetMapping
-    public List<BlogPost> getAllBlogPosts() {
-        return blogPostService.getAllBlogPosts();
+    public ResponseEntity<?> getAllBlogPosts() {
+        return ResponseEntity.ok(blogPostService.getAllBlogPosts());
     }
 
     @GetMapping("/blogpost/{id}")
     public ResponseEntity<?> getBlogPostById(@PathVariable Long id) {
-        BlogPost blogPost = blogPostService.getBlogPostById(id);
-
-        if (blogPost == null) {
-            return ResponseEntity.notFound().build();
-        } else {
-            return ResponseEntity.ok(blogPost);
-        }
+        return ResponseEntity.ok(blogPostService.getBlogPostById(id));
     }
 
     @PostMapping
-    public BlogPost createBlogPost(@RequestBody BlogPost blogPost) {
-        return blogPostService.createBlogPost(blogPost);
+    public ResponseEntity<?> createBlogPost(@RequestBody BlogPost blogPost) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(blogPostService.createBlogPost(blogPost));
     }
 
     @PutMapping("/blogpost/{id}")
-    public BlogPost editBlogPost(@PathVariable Long id, @RequestBody BlogPost updatedBlogPost) {
-        return blogPostService.updateBlogPost(id, updatedBlogPost);
+    public ResponseEntity<?> editBlogPost(@PathVariable Long id, @RequestBody BlogPost updatedBlogPost) {
+        return ResponseEntity.ok(blogPostService.updateBlogPost(id, updatedBlogPost));
     }
 
     @DeleteMapping("/{id}")
