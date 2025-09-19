@@ -19,7 +19,7 @@ import com.wenglam.baking_app.service.impl.BlogPostService;
 import jakarta.persistence.EntityNotFoundException;
 
 public class BlogPostServiceTest {
-    
+
     @Mock
     private BlogPostRepository blogPostRepositoryMock;
 
@@ -32,7 +32,7 @@ public class BlogPostServiceTest {
     void setUp() {
         // Initialize mocks
         MockitoAnnotations.openMocks(this);
-        blogPost = new BlogPost();                             
+        blogPost = new BlogPost();
         blogPost.setId(1L);
         blogPost.setTitle("Test Title");
         blogPost.setContent("Test Content");
@@ -55,11 +55,10 @@ public class BlogPostServiceTest {
         BlogPost createdBlogPost = blogPostService.createBlogPost(blogPost);
 
         assertAll(
-            () -> assertEquals(createdBlogPost.getId(), blogPost.getId()),
-            () -> assertEquals(createdBlogPost.getTitle(), blogPost.getTitle()),
-            () -> assertEquals(createdBlogPost.getContent(), blogPost.getContent()),
-            () -> assertEquals(createdBlogPost.getAuthor(), blogPost.getAuthor())
-        );
+                () -> assertEquals(createdBlogPost.getId(), blogPost.getId()),
+                () -> assertEquals(createdBlogPost.getTitle(), blogPost.getTitle()),
+                () -> assertEquals(createdBlogPost.getContent(), blogPost.getContent()),
+                () -> assertEquals(createdBlogPost.getAuthor(), blogPost.getAuthor()));
         assertNotNull(createdBlogPost);
         verify(blogPostRepositoryMock, times(1)).save(blogPost);
     }
@@ -69,11 +68,11 @@ public class BlogPostServiceTest {
     @Test
     void testGetAllBlogPosts() {
         // Given
-        BlogPost blogPost2 = new BlogPost();                             
-        blogPost.setId(2L);
-        blogPost.setTitle("Test Title2");
-        blogPost.setContent("Test Content2");
-        blogPost.setAuthor("Test Author2");
+        BlogPost blogPost2 = new BlogPost();
+        blogPost2.setId(2L);
+        blogPost2.setTitle("Test Title2");
+        blogPost2.setContent("Test Content2");
+        blogPost2.setAuthor("Test Author2");
 
         List<BlogPost> blogPosts = List.of(blogPost, blogPost2);
         when(blogPostRepositoryMock.findAll()).thenReturn(blogPosts);
@@ -135,11 +134,10 @@ public class BlogPostServiceTest {
     void testGetBlogPostById_throwsException() {
         when(blogPostRepositoryMock.findById(99L)).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(EntityNotFoundException.class, 
-            () -> {
-                blogPostService.getBlogPostById(99L);
-            }
-        );
+        Exception exception = assertThrows(EntityNotFoundException.class,
+                () -> {
+                    blogPostService.getBlogPostById(99L);
+                });
 
         assertTrue(exception.getMessage().contains("99") && exception.getMessage().contains("not found"));
         verify(blogPostRepositoryMock, times(1)).findById(99L);
@@ -159,25 +157,30 @@ public class BlogPostServiceTest {
         updatedBlogPost.setUpdatedAt(Instant.now());
 
         when(blogPostRepositoryMock.findById(existingBlogPost.getId())).thenReturn(Optional.of(existingBlogPost));
-        // when(blogPostRepositoryMock.save(updatedBlogPost)).thenReturn(updatedBlogPost); // Can't do this as service does not call save(updatedBlogPost)
-        when(blogPostRepositoryMock.save(any(BlogPost.class))).thenAnswer(i -> i.getArgument(0)); // return the argument passed to save method
+        // when(blogPostRepositoryMock.save(updatedBlogPost)).thenReturn(updatedBlogPost);
+        // // Can't do this as service does not call save(updatedBlogPost)
+        when(blogPostRepositoryMock.save(any(BlogPost.class))).thenAnswer(i -> i.getArgument(0)); // return the argument
+                                                                                                  // passed to save
+                                                                                                  // method
 
         BlogPost result = blogPostService.updateBlogPost(existingBlogPost.getId(), updatedBlogPost);
 
         assertAll(
-            () -> assertEquals(updatedBlogPost.getTitle(), result.getTitle()),
-            () -> assertEquals(updatedBlogPost.getContent(), result.getContent()),
-            () -> assertEquals(updatedBlogPost.getAuthor(), result.getAuthor()),
-            () -> assertEquals(updatedBlogPost.getUpdatedBy(), result.getUpdatedBy()),
-            () -> assertEquals(updatedBlogPost.getUpdatedAt(), result.getUpdatedAt()),
-            () -> assertNotNull(result.getUpdatedAt()),
-            () -> assertEquals(existingBlogPost.getCreatedAt(), result.getCreatedAt()) // createdAt should remain unchanged
+                () -> assertEquals(updatedBlogPost.getTitle(), result.getTitle()),
+                () -> assertEquals(updatedBlogPost.getContent(), result.getContent()),
+                () -> assertEquals(updatedBlogPost.getAuthor(), result.getAuthor()),
+                () -> assertEquals(updatedBlogPost.getUpdatedBy(), result.getUpdatedBy()),
+                () -> assertEquals(updatedBlogPost.getUpdatedAt(), result.getUpdatedAt()),
+                () -> assertNotNull(result.getUpdatedAt()),
+                () -> assertEquals(existingBlogPost.getCreatedAt(), result.getCreatedAt()) // createdAt should remain
+                                                                                           // unchanged
         );
         assertEquals(updatedBlogPost, result);
         verify(blogPostRepositoryMock, times(1)).findById(existingBlogPost.getId());
-        verify(blogPostRepositoryMock, times(1)).save(existingBlogPost); // existingBlogPost is the one being saved after updating its fields
+        verify(blogPostRepositoryMock, times(1)).save(existingBlogPost); // existingBlogPost is the one being saved
+                                                                         // after updating its fields
     }
-    
+
     @Test
     void testUpdateBlogPost_throwsException() {
         BlogPost updatedBlogPost = blogPost;
@@ -189,11 +192,10 @@ public class BlogPostServiceTest {
 
         when(blogPostRepositoryMock.findById(99L)).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(EntityNotFoundException.class, 
-            () -> {
-                blogPostService.updateBlogPost(99L, updatedBlogPost);
-            }
-        );
+        Exception exception = assertThrows(EntityNotFoundException.class,
+                () -> {
+                    blogPostService.updateBlogPost(99L, updatedBlogPost);
+                });
 
         assertTrue(exception.getMessage().contains("99") && exception.getMessage().contains("not found"));
         verify(blogPostRepositoryMock, times(1)).findById(99L);
