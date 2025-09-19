@@ -45,7 +45,7 @@ public class BlogPostService implements IBlogPostService {
                 existingBlogPost.setUpdatedBy(updatedBlogPost.getUpdatedBy());
                 return blogPostRepository.save(existingBlogPost);
             })
-            .orElseThrow(() -> new RuntimeException("Blog post not found with id " + id));
+            .orElseThrow(() -> new EntityNotFoundException("Blog post not found with id " + id));
     }
 
     public void deleteBlogPost(Long id) {
