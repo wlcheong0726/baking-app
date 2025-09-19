@@ -36,16 +36,16 @@ public class BlogPostService implements IBlogPostService {
     @Override
     public BlogPost updateBlogPost(Long id, BlogPost updatedBlogPost) {
         return blogPostRepository.findById(id)
-                .map(existingBlogPost -> {
-                    existingBlogPost.setTitle(updatedBlogPost.getTitle());
-                    existingBlogPost.setContent(updatedBlogPost.getContent());
-                    existingBlogPost.setAuthor(updatedBlogPost.getAuthor());
-                    existingBlogPost.setImageUrl(updatedBlogPost.getImageUrl());
-                    existingBlogPost.setUpdatedAt(updatedBlogPost.getUpdatedAt());
-                    existingBlogPost.setUpdatedBy(updatedBlogPost.getUpdatedBy());
-                    return blogPostRepository.save(existingBlogPost);
-                })
-                .orElseThrow(() -> new RuntimeException("Blog post not found with id " + id));
+            .map(existingBlogPost -> {
+                existingBlogPost.setTitle(updatedBlogPost.getTitle());
+                existingBlogPost.setContent(updatedBlogPost.getContent());
+                existingBlogPost.setAuthor(updatedBlogPost.getAuthor());
+                existingBlogPost.setImageUrl(updatedBlogPost.getImageUrl());
+                existingBlogPost.setUpdatedAt(updatedBlogPost.getUpdatedAt());
+                existingBlogPost.setUpdatedBy(updatedBlogPost.getUpdatedBy());
+                return blogPostRepository.save(existingBlogPost);
+            })
+            .orElseThrow(() -> new EntityNotFoundException("Blog post not found with id " + id));
     }
 
     public void deleteBlogPost(Long id) {
