@@ -30,7 +30,7 @@ public class BlogPostService implements IBlogPostService {
     @Override
     public BlogPost getBlogPostById(Long id) {
         return blogPostRepository.findById(id)
-                                    .orElseThrow(() -> new EntityNotFoundException("Blog post with ID " + id + " not found."));
+                .orElseThrow(() -> new EntityNotFoundException("Blog post with ID " + id + " not found."));
     }
 
     @Override
@@ -50,7 +50,8 @@ public class BlogPostService implements IBlogPostService {
 
     public void deleteBlogPost(Long id) {
         if (!blogPostRepository.existsById(id)) {
-            throw new EntityNotFoundException("Unable to delete blog post with ID " + id + ". Blog post cannot be found.");
+            throw new EntityNotFoundException(
+                    "Unable to delete blog post with ID " + id + ". Blog post cannot be found.");
         }
         blogPostRepository.deleteById(id);
     }
