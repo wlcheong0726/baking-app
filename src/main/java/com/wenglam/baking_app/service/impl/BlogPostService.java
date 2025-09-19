@@ -29,27 +29,29 @@ public class BlogPostService implements IBlogPostService {
 
     @Override
     public BlogPost getBlogPostById(Long id) {
-        return blogPostRepository.findById(id).orElse(null);
+        return blogPostRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Blog post with ID " + id + " not found."));
     }
 
     @Override
     public BlogPost updateBlogPost(Long id, BlogPost updatedBlogPost) {
         return blogPostRepository.findById(id)
-            .map(existingBlogPost -> {
-                existingBlogPost.setTitle(updatedBlogPost.getTitle());
-                existingBlogPost.setContent(updatedBlogPost.getContent());
-                existingBlogPost.setAuthor(updatedBlogPost.getAuthor());
-                existingBlogPost.setImageUrl(updatedBlogPost.getImageUrl());
-                existingBlogPost.setUpdatedAt(updatedBlogPost.getUpdatedAt());
-                existingBlogPost.setUpdatedBy(updatedBlogPost.getUpdatedBy());
-                return blogPostRepository.save(existingBlogPost);
-            })
-            .orElseThrow(() -> new RuntimeException("Blog post not found with id " + id));
+                .map(existingBlogPost -> {
+                    existingBlogPost.setTitle(updatedBlogPost.getTitle());
+                    existingBlogPost.setContent(updatedBlogPost.getContent());
+                    existingBlogPost.setAuthor(updatedBlogPost.getAuthor());
+                    existingBlogPost.setImageUrl(updatedBlogPost.getImageUrl());
+                    existingBlogPost.setUpdatedAt(updatedBlogPost.getUpdatedAt());
+                    existingBlogPost.setUpdatedBy(updatedBlogPost.getUpdatedBy());
+                    return blogPostRepository.save(existingBlogPost);
+                })
+                .orElseThrow(() -> new RuntimeException("Blog post not found with id " + id));
     }
 
     public void deleteBlogPost(Long id) {
         if (!blogPostRepository.existsById(id)) {
-            throw new EntityNotFoundException("Unable to delete blog post with ID " + id + ". Blog post cannot be found.");
+            throw new EntityNotFoundException(
+                    "Unable to delete blog post with ID " + id + ". Blog post cannot be found.");
         }
         blogPostRepository.deleteById(id);
     }
