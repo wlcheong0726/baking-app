@@ -83,6 +83,30 @@ FRONTEND:
 BACKEND:
 - Updated to return blog post data that's just been saved to database as a confirmation of saving success + data can then be used immdiately by frontend.
 
+## 06 Sept 2025
+FRONTEND:
+- Merged feature/add-new-blog into develop.
+- Added and merged feature/delete-blog into develop, which deletes blog on clicking 'Delete' button on specific blog card.
+- Added feature/edit-new-blog branch.
+- Updated branch so it opens blog form modal with existing blog data for edit, and on submitting, updates blog data - need to rerender blogspage to display updated blog.
+
+BACKEND:
+- Added develop as default branch.
+- Added and merged feature/delete-blog into develop.
+- Added feature/edit-blog branch.
+
+## 08 Sept 2025
+FRONTEND:
+- Updated edit blog feature so blogs page is rerendered to display newly updated blog data.
+
+## 11 Sept 2025
+FRONTEND:
+- Bug: The frontend incorrectly displayed an error stating it was "unable to create blog" even though the POST request to the backend was successful.
+- Cause: The logic relied solely on the modalIsVisible state to determine whether the modal was being used to add a new blog or edit an existing one. The state was ambiguous and not sufficient to distinguish between the two actions because in both cases, the modalIsVisible is true.
+- Fix: Introduced two new state variables: isAddingNewBlog and isEditingBLog - these explicityly track the modal's purpose, allowing the UI logic to correctly handle success and error states.
+- Result: Blog creation now works as expected and the modal behaviour is more predictable and maintainable.
+- Merged feature/edit-blog to develop.
+
 ## 15 Sept 2025
 BACKEND:
 - Created add-tests branch.
