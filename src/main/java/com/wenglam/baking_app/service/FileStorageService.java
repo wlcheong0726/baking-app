@@ -19,7 +19,7 @@ public class FileStorageService {
     @Value("${app.upload.dir:uploads}")
     private String uploadDir;
 
-    @Value("${app.public.base-url:}")
+    @Value("${app.public.base-url:http://localhost:8080}") // Base URL for constructing public URLs
     private String publicBaseUrl;
 
     private Path root;
@@ -28,7 +28,8 @@ public class FileStorageService {
     public void init() throws IOException {
         // Resolves to an absolute filesystem path (project working directory by default)
         root = Paths.get(uploadDir).toAbsolutePath().normalize();
-        Files.createDirectories(root);
+        Files.createDirectories(root); 
+        System.out.println("[FileStorageService] [Upload] Saving files under " + root.toAbsolutePath());
     }
 
     /**
@@ -39,10 +40,13 @@ public class FileStorageService {
 
         String extension = getExtension(file.getOriginalFilename());
         String filename = UUID.randomUUID().toString() + (extension.isEmpty() ? "" : "." + extension); // Unique filename
-        Path target = root.resolve(filename); // Absolute path to the target file
+        Path target = root.resolve(filename).normalize(); // Absolute path to the target file
+        System.out.println("[FileStorageService]: " + root.resolve(filename).toString());
+        System.out.println("[FileStorageService]: " + target.toString());
 
         try {
             Files.copy(file.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING); // Save the file to disk
+            System.out.println("[FileStorageService] Stored file " + filename + " at " + target.toString());
         } catch (IOException e) {
             throw new RuntimeException("Failed to store file " + filename, e);
         }
