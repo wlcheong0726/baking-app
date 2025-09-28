@@ -117,3 +117,25 @@ FRONTEND:
 - Updated styling for blog for consistency and aesthetics.
 - Updated 'Read More' button to make it functional when text length is more than 200.
 - Added a 'Back to Blogs' link in Full Blog page.
+- Merged feature/edit-blog and feature/read-more-and-button-styling branches into develop
+
+BACKEND:
+- Merged feature/add-tests to develop
+
+## 25 Sept 2025
+BACKEND:
+- Added branch feature/upload-image-when-creating-blog.
+- Updated createNewBlog method and added required classes to handle image upload request, saves file to uploads folder and saves image URL to DB.
+
+
+## 28 Sept 2025
+FRONTEND:
+- Added branch feature/upload-image-when-adding-new-blog-and-display-image.
+- Updated timeout for making HTTP requests to backend from 10 sec to 60 sec to allow longer request processing.
+- Updated Blogs section to display blogs with image if there is one.
+- Updated blog form for creating new blog to enable uploading one image and remove image, preview also available.
+- Updated stylings for blog form and image upload section.
+
+BACKEND:
+- Added System.out.println to print paths images being saved to disk.
+- Updated .gitignore to prevent resource folder - uploads/ - from being uploaded to online repository.
