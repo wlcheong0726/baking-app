@@ -19,7 +19,6 @@ import lombok.Setter;
 @Entity
 @Table(name = "blog_post")
 public class BlogPost {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     // IDENTITY is a column property that makes column auto-increment its value for
