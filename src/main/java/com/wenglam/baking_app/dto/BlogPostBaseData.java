@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class BlogPostBaseData {
+public abstract class BlogPostBaseData {
     protected String title;
     protected String content;
     protected String author;
