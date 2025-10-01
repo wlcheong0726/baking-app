@@ -40,8 +40,7 @@ public class BlogPostController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> createBlogPost(@ModelAttribute BlogPostCreateData blogPostCreateData,
-                                            @RequestParam(required = false) MultipartFile imageFile) {
+    public ResponseEntity<?> createBlogPost(@ModelAttribute BlogPostCreateData blogPostCreateData) {
         return ResponseEntity.status(HttpStatus.CREATED).body(blogPostService.createBlogPost(blogPostCreateData));
     }
 
