@@ -1,17 +1,15 @@
 package com.wenglam.baking_app.controller;
 
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.wenglam.baking_app.dto.BlogPostCreateData;
 import com.wenglam.baking_app.dto.BlogPostUpdateData;
 import com.wenglam.baking_app.service.IBlogPostService;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.http.HttpStatus;
@@ -40,13 +38,14 @@ public class BlogPostController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> createBlogPost(@ModelAttribute BlogPostCreateData blogPostCreateData) {
+    public ResponseEntity<?> createBlogPost(@Valid @ModelAttribute BlogPostCreateData blogPostCreateData) {
+
         return ResponseEntity.status(HttpStatus.CREATED).body(blogPostService.createBlogPost(blogPostCreateData));
     }
 
     @PutMapping(value = "/blogpost/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> editBlogPost(@PathVariable Long id, 
-                                            @ModelAttribute BlogPostUpdateData blogPostUpdateData) {
+                                            @Valid @ModelAttribute BlogPostUpdateData blogPostUpdateData) {
         return ResponseEntity.ok(blogPostService.updateBlogPost(id, blogPostUpdateData));
     }
 
