@@ -5,7 +5,6 @@ import com.wenglam.baking_app.dto.BlogPostCreateData;
 import com.wenglam.baking_app.dto.BlogPostUpdateData;
 import com.wenglam.baking_app.service.IBlogPostService;
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -50,12 +49,8 @@ public class BlogPostController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteBlogPost(@PathVariable Long id) {
-        try {
+    public ResponseEntity<Void> deleteBlogPost(@PathVariable Long id) {
             blogPostService.deleteBlogPost(id);
-            return new ResponseEntity<>("Blog post with ID " + id + " deleted successfully.", HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }
+            return ResponseEntity.noContent().build(); // 204 No Content
     }
 }
