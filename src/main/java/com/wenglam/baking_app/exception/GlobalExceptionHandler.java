@@ -11,7 +11,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import com.wenglam.baking_app.dto.ErrorResponseDto;
 
@@ -21,52 +21,69 @@ import jakarta.servlet.http.HttpServletRequest;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(Exception.class) // Http status code: 500
-    public ResponseEntity<ErrorResponseDto> handleGlobalException(Exception exception, WebRequest webRequest,
-            HttpServletRequest httpServletRequest) {
-        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
-                webRequest.getDescription(false), // Client request URI and session ID
-                HttpStatus.INTERNAL_SERVER_ERROR,
-                exception.getMessage(),
-                LocalDateTime.now());
+        @ExceptionHandler(Exception.class) // Http status code: 500
+        public ResponseEntity<ErrorResponseDto> handleGlobalException(Exception exception,
+                        HttpServletRequest httpServletRequest) {
+                ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                                httpServletRequest.getRequestURI(),
+                                HttpStatus.INTERNAL_SERVER_ERROR,
+                                exception.getMessage(),
+                                LocalDateTime.now());
+                return ResponseEntity.internalServerError().body(errorResponseDto);
+        }
 
-        return new ResponseEntity<>(errorResponseDto, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+        @ExceptionHandler(MethodArgumentNotValidException.class) // Http status code: 400
+        public ResponseEntity<ErrorResponseDto> handleValidationException(MethodArgumentNotValidException exception,
+                        HttpServletRequest httpServletRequest) {
+                Map<String, String> errors = new HashMap<>();
+                List<FieldError> fieldErrorList = exception.getBindingResult().getFieldErrors();
+                fieldErrorList.forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
 
-    @ExceptionHandler(MethodArgumentNotValidException.class) // Http status code: 400
-    public ResponseEntity<Map<String, String>> handleValidationException(MethodArgumentNotValidException exception,
-            WebRequest webRequest, HttpServletRequest httpServletRequest) {
-        Map<String, String> errors = new HashMap<>();
-        List<FieldError> fieldErrorList = exception.getBindingResult().getFieldErrors();
-        fieldErrorList.forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
+                ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                                httpServletRequest.getRequestURI(),
+                                HttpStatus.INTERNAL_SERVER_ERROR,
+                                errors.toString(),
+                                LocalDateTime.now());
 
-        return ResponseEntity.badRequest().body(errors);
-    }
+                return ResponseEntity.badRequest().body(errorResponseDto);
+        }
 
-    @ExceptionHandler(IllegalArgumentException.class) // Http status code: 400
-    public ResponseEntity<ErrorResponseDto> handleIllegalArgumentException(IllegalArgumentException exception,
-            WebRequest webRequest, HttpServletRequest httpServletRequest) {
-        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
-                webRequest.getDescription(false), // Client request URI and session ID
-                HttpStatus.BAD_REQUEST,
-                exception.getMessage(),
-                LocalDateTime.now());
+        @ExceptionHandler(IllegalArgumentException.class) // Http status code: 400
+        public ResponseEntity<ErrorResponseDto> handleIllegalArgumentException(IllegalArgumentException exception,
+                        HttpServletRequest httpServletRequest) {
+                ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                                httpServletRequest.getRequestURI(),
+                                HttpStatus.BAD_REQUEST,
+                                exception.getMessage(),
+                                LocalDateTime.now());
 
-        return new ResponseEntity<>(errorResponseDto, HttpStatus.BAD_REQUEST);
-    }
+                return new ResponseEntity<>(errorResponseDto, HttpStatus.BAD_REQUEST);
+        }
 
-    @ExceptionHandler(EntityNotFoundException.class) // Http status code: 404
-    public ResponseEntity<ErrorResponseDto> handleEntityNotFoundException(EntityNotFoundException exception,
-            WebRequest webRequest, HttpServletRequest httpServletRequest) {
-        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
-                webRequest.getDescription(false), // Client request URI and session ID
-                HttpStatus.NOT_FOUND,
-                exception.getMessage(),
-                LocalDateTime.now());
+        @ExceptionHandler(MaxUploadSizeExceededException.class) // Http status code: 400
+        public ResponseEntity<ErrorResponseDto> handleMaxUploadSizeExceededException(
+                        MaxUploadSizeExceededException exception,
+                        HttpServletRequest httpServletRequest) {
+                ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                                httpServletRequest.getRequestURI(),
+                                HttpStatus.BAD_REQUEST,
+                                exception.getMessage(),
+                                LocalDateTime.now());
 
-        return new ResponseEntity<>(errorResponseDto, HttpStatus.NOT_FOUND);
-    }
+                return new ResponseEntity<>(errorResponseDto, HttpStatus.BAD_REQUEST);
+        }
 
-    // TODO: DataIntegrityViolationException - 409
+        @ExceptionHandler(EntityNotFoundException.class) // Http status code: 404
+        public ResponseEntity<ErrorResponseDto> handleEntityNotFoundException(EntityNotFoundException exception,
+                        HttpServletRequest httpServletRequest) {
+                ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                                httpServletRequest.getRequestURI(),
+                                HttpStatus.NOT_FOUND,
+                                exception.getMessage(),
+                                LocalDateTime.now());
 
+                return new ResponseEntity<>(errorResponseDto, HttpStatus.NOT_FOUND);
+        }
+
+        // TODO: DataIntegrityViolationException - 409
 }
