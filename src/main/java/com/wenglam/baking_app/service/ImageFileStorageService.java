@@ -5,22 +5,27 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.annotation.PostConstruct;
 
 @Service
-public class FileStorageService {
+public class ImageFileStorageService {
     
     @Value("${app.upload.dir:uploads}")
     private String uploadDir;
 
     @Value("${app.public.base-url:http://localhost:8080}") // Base URL for constructing public URLs
     private String publicBaseUrl;
+
+    @Value("${app.upload.allowed-types:image/jpeg,image/png}")
+    private List<String> allowedTypes;
 
     private Path root;
 
@@ -34,18 +39,24 @@ public class FileStorageService {
 
     /**
      * Saves file to disk and return a URL that the app will serve.
+     * @throws HttpMediaTypeNotSupportedException 
      */
-    public String store(MultipartFile file) {
-        if (file == null || file.isEmpty()) return null;
+    public String store(MultipartFile imageFile) {
+        if (imageFile == null || imageFile.isEmpty()) return null;
 
-        String extension = getExtension(file.getOriginalFilename());
-        String filename = UUID.randomUUID().toString() + (extension.isEmpty() ? "" : "." + extension); // Unique filename
+        // Check content type allowed
+        String contentType = imageFile.getContentType();
+        if (!isAllowedContentType(contentType)) {
+            throw new IllegalArgumentException("Please upload JPEG or PNG files.");
+        };
+
+        String filename = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename(); // Unique filename
         Path target = root.resolve(filename).normalize(); // Absolute path to the target file
         System.out.println("[FileStorageService]: " + root.resolve(filename).toString());
         System.out.println("[FileStorageService]: " + target.toString());
 
         try {
-            Files.copy(file.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING); // Save the file to disk
+            Files.copy(imageFile.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING); // Save the file to disk
             System.out.println("[FileStorageService] Stored file " + filename + " at " + target.toString());
         } catch (IOException e) {
             throw new RuntimeException("Failed to store file " + filename, e);
@@ -57,6 +68,18 @@ public class FileStorageService {
         } 
             return publicBaseUrl.replaceAll("/$", "") + relativeUrl;
     }
+
+    private boolean isAllowedContentType(String type) {
+        if (type == null || allowedTypes == null) {
+            return false;
+        }
+
+        return allowedTypes.stream()
+            .map(String::trim)
+            .anyMatch(allowedType -> allowedType.equalsIgnoreCase(type));
+    }
+
+    // TODO: Delete image on disk
 
     private static String getExtension(String filename) {
         if (filename == null) return "";
