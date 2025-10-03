@@ -9,7 +9,7 @@ import com.wenglam.baking_app.dto.BlogPostCreateData;
 import com.wenglam.baking_app.dto.BlogPostUpdateData;
 import com.wenglam.baking_app.entity.BlogPost;
 import com.wenglam.baking_app.repository.BlogPostRepository;
-import com.wenglam.baking_app.service.FileStorageService;
+import com.wenglam.baking_app.service.ImageFileStorageService;
 import com.wenglam.baking_app.service.IBlogPostService;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -20,18 +20,17 @@ import lombok.RequiredArgsConstructor;
 public class BlogPostService implements IBlogPostService {
 
     private final BlogPostRepository blogPostRepository;
-    private final FileStorageService fileStorageService;
+    private final ImageFileStorageService imageFileStorageService;
 
     @Override
     public BlogPost createBlogPost(BlogPostCreateData blogPostCreateData) {
-
         String imageUrl = null;
         if (blogPostCreateData.getImageFile() != null && !blogPostCreateData.getImageFile().isEmpty()) {
-            imageUrl = fileStorageService.store(blogPostCreateData.getImageFile());
+            imageUrl = imageFileStorageService.store(blogPostCreateData.getImageFile());
         }
 
         BlogPost blogPostToBeCreated = new BlogPost();
-        blogPostToBeCreated.setAuthor(blogPostCreateData.getAuthor());
+        blogPostToBeCreated.setTitle(blogPostCreateData.getTitle());
         blogPostToBeCreated.setContent(blogPostCreateData.getContent());
         blogPostToBeCreated.setAuthor(blogPostCreateData.getAuthor());
         blogPostToBeCreated.setImageUrl(imageUrl);
@@ -62,7 +61,7 @@ public class BlogPostService implements IBlogPostService {
             imageUrl = blogPostUpdateData.getImageUrl(); 
         } else if (blogPostUpdateData.getImageFile() != null && !blogPostUpdateData.getImageFile().isEmpty()) {
             // Handles scenario where the uploaded picture has been changed
-            imageUrl = fileStorageService.store(blogPostUpdateData.getImageFile());
+            imageUrl = imageFileStorageService.store(blogPostUpdateData.getImageFile());
         }
 
         blogPostToBeUpdated.setTitle(blogPostUpdateData.getTitle());
