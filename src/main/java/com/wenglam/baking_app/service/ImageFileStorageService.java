@@ -27,6 +27,9 @@ public class ImageFileStorageService {
     @Value("${app.upload.allowed-types:image/jpeg,image/png}")
     private List<String> allowedTypes;
 
+    @Value("${spring.servlet.multipart.max-file-size:5MB}")
+    private String maxFileSize;
+
     private Path root;
 
     @PostConstruct
@@ -43,6 +46,10 @@ public class ImageFileStorageService {
      */
     public String store(MultipartFile imageFile) {
         if (imageFile == null || imageFile.isEmpty()) return null;
+
+        if (imageFile.getSize() > Byte.parseByte(maxFileSize)) {
+            throw new IllegalArgumentException("Max Image Size: 5MB.");
+        }
 
         // Check content type allowed
         String contentType = imageFile.getContentType();
