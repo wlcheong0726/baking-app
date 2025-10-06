@@ -39,7 +39,6 @@ public class ImageFileStorageService {
         // Resolves to an absolute filesystem path (project working directory by default)
         root = Paths.get(uploadDir).toAbsolutePath().normalize();
         Files.createDirectories(root); 
-        log.info("Project root: " + root.toAbsolutePath());
     }
 
     /**
@@ -49,27 +48,32 @@ public class ImageFileStorageService {
     public String store(MultipartFile imageFile) {
         if (imageFile == null || imageFile.isEmpty()) return null;
 
-        log.info("Image size = {}B.", imageFile.getSize());
+        log.info("Image size={}B", imageFile.getSize());
 
         if (imageFile.getSize() > Byte.parseByte(maxFileSize)) {
+
+            log.warn("Image too large size={}", imageFile.getSize());
+
             throw new IllegalArgumentException("Max Image Size: 5MB.");
         }
 
         // Check content type allowed
         String contentType = imageFile.getContentType();
 
-        log.info("Image type = .", contentType);
+        log.info("Image type={}.", contentType);
 
         if (!isAllowedContentType(contentType)) {
+            log.warn("Invalid image type={}", contentType);
             throw new IllegalArgumentException("Please upload JPEG or PNG files.");
         };
 
         String filename = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename(); // Unique filename
         Path target = root.resolve(filename).normalize(); // Absolute path to the target file
-        log.info("Image saved to: " + target.toString());
+        String relative = root.relativize(target).toString();
+        log.info("Image saved path={}: ", relative);
 
         try {
-            log.info("Storing image name={} type={} size={}B filepath={}", filename, imageFile.getContentType(), imageFile.getSize(), target.toString());
+            log.info("Storing image name={} type={} size={}B path={}", filename, imageFile.getContentType(), imageFile.getSize(), relative);
             Files.copy(imageFile.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING); // Save the file to disk
         } catch (IOException e) {
             throw new RuntimeException("Failed to store image " + filename, e);
