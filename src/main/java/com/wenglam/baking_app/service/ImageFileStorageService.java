@@ -53,7 +53,6 @@ public class ImageFileStorageService {
         if (imageFile.getSize() > Byte.parseByte(maxFileSize)) {
 
             log.warn("Image too large size={}", imageFile.getSize());
-
             throw new IllegalArgumentException("Max Image Size: 5MB.");
         }
 
@@ -63,7 +62,7 @@ public class ImageFileStorageService {
         log.info("Image type={}.", contentType);
 
         if (!isAllowedContentType(contentType)) {
-            log.warn("Invalid image type={}", contentType);
+            log.warn("Rejected image type={}", contentType);
             throw new IllegalArgumentException("Please upload JPEG or PNG files.");
         };
 
@@ -76,7 +75,8 @@ public class ImageFileStorageService {
             log.info("Storing image name={} type={} size={}B path={}", filename, imageFile.getContentType(), imageFile.getSize(), relative);
             Files.copy(imageFile.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING); // Save the file to disk
         } catch (IOException e) {
-            throw new RuntimeException("Failed to store image " + filename, e);
+            log.error("Failed to store image name={} type={} size={}B path={}", filename, imageFile.getContentType(), imageFile.getSize(), relative);
+            throw new IllegalStateException("Failed to store image", e);
         }
 
         String relativeUrl = "/uploads/" + filename;
