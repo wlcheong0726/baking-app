@@ -17,7 +17,9 @@ import com.wenglam.baking_app.dto.ErrorResponseDto;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -29,6 +31,9 @@ public class GlobalExceptionHandler {
                                 HttpStatus.INTERNAL_SERVER_ERROR,
                                 exception.getMessage(),
                                 LocalDateTime.now());
+                
+                log.error("500 Unexpected {} {}", httpServletRequest.getMethod(), httpServletRequest.getRequestURI(), exception);
+
                 return ResponseEntity.internalServerError().body(errorResponseDto);
         }
 
@@ -44,6 +49,8 @@ public class GlobalExceptionHandler {
                                 HttpStatus.INTERNAL_SERVER_ERROR,
                                 errors.toString(),
                                 LocalDateTime.now());
+                
+                log.warn("400 Validation {} -> {}", httpServletRequest.getRequestURI(), errors.toString());
 
                 return ResponseEntity.badRequest().body(errorResponseDto);
         }
@@ -57,6 +64,8 @@ public class GlobalExceptionHandler {
                                 exception.getMessage(),
                                 LocalDateTime.now());
 
+                log.warn("400 - Illegal Argument {} -> {}", httpServletRequest.getRequestURI(), exception.getMessage());
+
                 return new ResponseEntity<>(errorResponseDto, HttpStatus.BAD_REQUEST);
         }
 
@@ -69,6 +78,8 @@ public class GlobalExceptionHandler {
                                 HttpStatus.BAD_REQUEST,
                                 exception.getMessage(),
                                 LocalDateTime.now());
+                
+                log.warn("400 - Image too large {} -> {}", httpServletRequest.getRequestURI(), exception.getMessage());
 
                 return new ResponseEntity<>(errorResponseDto, HttpStatus.BAD_REQUEST);
         }
@@ -81,6 +92,7 @@ public class GlobalExceptionHandler {
                                 HttpStatus.NOT_FOUND,
                                 exception.getMessage(),
                                 LocalDateTime.now());
+                log.warn("404 - Not Found {} {}", httpServletRequest.getMethod(), httpServletRequest.getRequestURI());
 
                 return new ResponseEntity<>(errorResponseDto, HttpStatus.NOT_FOUND);
         }

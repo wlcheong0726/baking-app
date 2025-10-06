@@ -40,7 +40,7 @@ public class BlogPostService implements IBlogPostService {
         blogPostToBeCreated.setAuthor(blogPostCreateData.getAuthor());
         blogPostToBeCreated.setImageUrl(imageUrl);
 
-        log.info("Saving blog post to repository: title={}, author={}", blogPostToBeCreated.getTitle(), blogPostToBeCreated.getAuthor());
+        log.info("Creating blog post title='{}' author='{}'", blogPostToBeCreated.getTitle(), blogPostToBeCreated.getAuthor());
 
         return blogPostRepository.save(blogPostToBeCreated);
     }
@@ -78,7 +78,7 @@ public class BlogPostService implements IBlogPostService {
         blogPostToBeUpdated.setUpdatedAt(Instant.now()); // TODO: add updated at datetime
         blogPostToBeUpdated.setUpdatedBy(blogPostUpdateData.getAuthor()); // Amend in the future if allow other users to update
 
-        log.info("Updating blog post id={} in repository: title={}, author={}", blogPostToBeUpdated.getId(), blogPostToBeUpdated.getTitle(), blogPostToBeUpdated.getAuthor());
+        log.info("Updating blog post id={} title='{}' author='{}'", blogPostToBeUpdated.getId(), blogPostToBeUpdated.getTitle(), blogPostToBeUpdated.getAuthor());
 
         return blogPostRepository.save(blogPostToBeUpdated);
     }
@@ -89,7 +89,7 @@ public class BlogPostService implements IBlogPostService {
                     "Unable to delete blog post with ID " + id + ". Blog post cannot be found.");
         }
 
-        log.info("Deleting blog post id={} in repository: title={}, author={}", id);
+        log.info("Deleting blog post id={} in repository", id);
 
         blogPostRepository.deleteById(id);
     }
