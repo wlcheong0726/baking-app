@@ -14,7 +14,9 @@ import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 public class ImageFileStorageService {
     
@@ -37,7 +39,7 @@ public class ImageFileStorageService {
         // Resolves to an absolute filesystem path (project working directory by default)
         root = Paths.get(uploadDir).toAbsolutePath().normalize();
         Files.createDirectories(root); 
-        System.out.println("[FileStorageService] [Upload] Saving files under " + root.toAbsolutePath());
+        log.info("Project root: " + root.toAbsolutePath());
     }
 
     /**
@@ -47,26 +49,30 @@ public class ImageFileStorageService {
     public String store(MultipartFile imageFile) {
         if (imageFile == null || imageFile.isEmpty()) return null;
 
+        log.info("Image size = {}B.", imageFile.getSize());
+
         if (imageFile.getSize() > Byte.parseByte(maxFileSize)) {
             throw new IllegalArgumentException("Max Image Size: 5MB.");
         }
 
         // Check content type allowed
         String contentType = imageFile.getContentType();
+
+        log.info("Image type = .", contentType);
+
         if (!isAllowedContentType(contentType)) {
             throw new IllegalArgumentException("Please upload JPEG or PNG files.");
         };
 
         String filename = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename(); // Unique filename
         Path target = root.resolve(filename).normalize(); // Absolute path to the target file
-        System.out.println("[FileStorageService]: " + root.resolve(filename).toString());
-        System.out.println("[FileStorageService]: " + target.toString());
+        log.info("Image saved to: " + target.toString());
 
         try {
+            log.info("Storing image name={} type={} size={}B filepath={}", filename, imageFile.getContentType(), imageFile.getSize(), target.toString());
             Files.copy(imageFile.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING); // Save the file to disk
-            System.out.println("[FileStorageService] Stored file " + filename + " at " + target.toString());
         } catch (IOException e) {
-            throw new RuntimeException("Failed to store file " + filename, e);
+            throw new RuntimeException("Failed to store image " + filename, e);
         }
 
         String relativeUrl = "/uploads/" + filename;
