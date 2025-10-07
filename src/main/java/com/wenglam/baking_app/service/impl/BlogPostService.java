@@ -56,7 +56,7 @@ public class BlogPostService implements IBlogPostService {
             log.warn("Blog post not found id={}", id);
 
             throw new EntityNotFoundException(
-                    "Unable to delete blog post with ID " + id + ". Blog post cannot be found.");
+                    "Unable to find blog post with id: " + id + ".");
         }
 
         return blogPostRepository.findById(id).get();
