@@ -79,6 +79,7 @@ public class ImageFileStorageService {
         } catch (IOException e) {
             log.error("Failed to store image name={} type={} size={}B path={}", filename, imageFile.getContentType(), imageFile.getSize(), relative);
             throw new IllegalStateException("Failed to store image", e);
+            // TODO - review type of exception thrown
         }
 
         String relativeUrl = "/uploads/" + filename;
