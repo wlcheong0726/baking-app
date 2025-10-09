@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -89,5 +90,16 @@ public class ImageFileStorageServiceTest {
         Exception exception = assertThrows(IllegalArgumentException.class, () -> imageFileStorageService.store(multipartFileMock));
         assertTrue(exception.getMessage().contains("Rejected image type"));
     }
-    
+
+    @Test
+    void store_ValidImage_Throws_IllegalStateException() throws IOException {
+        when(multipartFileMock.isEmpty()).thenReturn(false);
+        when(multipartFileMock.getSize()).thenReturn(1024L);
+        when(multipartFileMock.getContentType()).thenReturn("image/png");
+        when(multipartFileMock.getOriginalFilename()).thenReturn("test_image.png");
+        when(multipartFileMock.getInputStream()).thenThrow(new IOException());
+
+        Exception exception = assertThrows(IllegalStateException.class, () -> imageFileStorageService.store(multipartFileMock));
+        assertTrue(exception.getMessage().contains("Failed to store image"));
+    }
 }
