@@ -320,13 +320,7 @@ public class BlogPostServiceTest {
             blogPostUpdateData.setAuthor("Updated Author");
 
             when(blogPostRepositoryMock.findById(blogPost.getId())).thenReturn(Optional.of(blogPost));
-            when(blogPostRepositoryMock.save(any(BlogPost.class))).thenAnswer(invocation -> invocation.getArgument(0)); // return
-                                                                                                                        // the
-                                                                                                                        // argument
-                                                                                                                        // passed
-                                                                                                                        // to
-                                                                                                                        // saved
-                                                                                                                        // method
+            when(blogPostRepositoryMock.save(any(BlogPost.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
             BlogPost updatedBlogPost = blogPostService.updateBlogPost(blogPost.getId(), blogPostUpdateData);
 
@@ -337,9 +331,7 @@ public class BlogPostServiceTest {
                     () -> assertEquals(blogPostUpdateData.getAuthor(), updatedBlogPost.getUpdatedBy()),
                     () -> assertEquals(blogPostUpdateData.getImageUrl(), updatedBlogPost.getImageUrl()),
                     () -> assertNotNull(updatedBlogPost.getUpdatedAt()),
-                    () -> assertEquals(blogPost.getCreatedAt(), updatedBlogPost.getCreatedAt()) // createdAt should
-                                                                                                // remain
-            // unchanged
+                    () -> assertEquals(blogPost.getCreatedAt(), updatedBlogPost.getCreatedAt())
             );
             verify(blogPostRepositoryMock, times(1)).findById(blogPost.getId());
             verify(imageFileStorageServiceMock, never()).store(any());
@@ -366,7 +358,6 @@ public class BlogPostServiceTest {
             verify(blogPostRepositoryMock, never()).save(any(BlogPost.class));
             verifyNoMoreInteractions(blogPostRepositoryMock);
         }
-
     }
 
     @Nested
