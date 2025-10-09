@@ -127,6 +127,20 @@ public class BlogPostServiceTest {
             verify(imageFileStorageServiceMock, never()).store(any());
             verify(blogPostRepositoryMock, times(1)).save(any(BlogPost.class));
         }
+
+        @Test
+        void createBlogPostWithImage_Fail() {
+            BlogPostCreateData blogPostCreateData = new BlogPostCreateData();
+            blogPostCreateData.setTitle("Test Title");
+            blogPostCreateData.setAuthor("Test Author");
+            blogPostCreateData.setContent("Test Content");
+            blogPostCreateData.setImageFile(multipartFileMock);
+
+            when(imageFileStorageServiceMock.store(blogPostCreateData.getImageFile())).thenThrow(new IllegalArgumentException());
+
+            assertThrows(IllegalArgumentException.class, () -> blogPostService.createBlogPost(blogPostCreateData));
+            verify(blogPostRepositoryMock, never()).save(any());
+        }
     }
 
     @Nested
