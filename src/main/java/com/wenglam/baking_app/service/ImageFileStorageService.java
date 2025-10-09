@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.wenglam.baking_app.utility.ByteUtil;
+
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 
@@ -50,7 +52,7 @@ public class ImageFileStorageService {
 
         log.info("Image size={}B", imageFile.getSize());
 
-        if (imageFile.getSize() > Byte.parseByte(maxFileSize)) {
+        if (imageFile.getSize() > ByteUtil.parseSizeToBytes(maxFileSize)) {
 
             log.warn("Image too large size={}", imageFile.getSize());
             throw new IllegalArgumentException("Max Image Size: 5MB.");
