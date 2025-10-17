@@ -26,7 +26,7 @@ public class ImageFileStorageService {
     private String uploadDir;
 
     @Value("${app.public.base-url:http://localhost:8080}") // Base URL for constructing public URLs
-    private String publicBaseUrl;
+    private String publicBaseUrl; // TODO: remove later on and add in controller layer so it works with random port numbers in tests
 
     @Value("${app.upload.allowed-types:image/jpeg,image/png}")
     private List<String> allowedTypes;
