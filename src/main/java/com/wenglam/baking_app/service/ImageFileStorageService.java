@@ -25,9 +25,6 @@ public class ImageFileStorageService {
     @Value("${app.upload.dir:uploads}")
     private String uploadDir;
 
-    @Value("${app.public.base-url:http://localhost:8080}") // Base URL for constructing public URLs
-    private String publicBaseUrl; // TODO: remove later on and add in controller layer so it works with random port numbers in tests
-
     @Value("${app.upload.allowed-types:image/jpeg,image/png}")
     private List<String> allowedTypes;
 
@@ -83,10 +80,8 @@ public class ImageFileStorageService {
         }
 
         String relativeUrl = "/uploads/" + filename;
-        if (publicBaseUrl == null || publicBaseUrl.isBlank()) {
-            return relativeUrl;
-        } 
-            return publicBaseUrl.replaceAll("/$", "") + relativeUrl;
+        
+        return relativeUrl;
     }
 
     private boolean isAllowedContentType(String type) {
