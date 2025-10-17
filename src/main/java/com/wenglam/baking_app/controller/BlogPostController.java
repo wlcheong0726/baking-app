@@ -55,7 +55,7 @@ public class BlogPostController {
     }
 
     @PutMapping(value = "/blogpost/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> editBlogPost(@PathVariable Long id, 
+    public ResponseEntity<?> updateBlogPost(@PathVariable Long id, 
                                             @Valid @ModelAttribute BlogPostUpdateData blogPostUpdateData) {
         log.info("Update blog post id={} title='{}' author='{}'", id, blogPostUpdateData.getTitle(), blogPostUpdateData.getAuthor());
 
