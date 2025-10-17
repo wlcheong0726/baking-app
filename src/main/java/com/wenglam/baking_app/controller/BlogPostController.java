@@ -3,7 +3,9 @@ package com.wenglam.baking_app.controller;
 import org.springframework.web.bind.annotation.RestController;
 import com.wenglam.baking_app.dto.BlogPostCreateData;
 import com.wenglam.baking_app.dto.BlogPostUpdateData;
+import com.wenglam.baking_app.entity.BlogPost;
 import com.wenglam.baking_app.service.IBlogPostService;
+import com.wenglam.baking_app.utility.UrlBuilder;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -41,14 +43,30 @@ public class BlogPostController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createBlogPost(@Valid @ModelAttribute BlogPostCreateData blogPostCreateData) {
         log.info("Create blog post title='{}' author='{}'", blogPostCreateData.getTitle(), blogPostCreateData.getAuthor());
-        return ResponseEntity.status(HttpStatus.CREATED).body(blogPostService.createBlogPost(blogPostCreateData));
+
+        BlogPost createdBlogPost = blogPostService.createBlogPost(blogPostCreateData);
+
+        // Construct absolute image url if image Url is present
+        if (createdBlogPost != null && createdBlogPost.getImageUrl() != null) {
+            createdBlogPost.setImageUrl(UrlBuilder.buildFullUrl(createdBlogPost.getImageUrl()));
+            log.info("Constructed absolute image URL: {}", createdBlogPost.getImageUrl());
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdBlogPost);
     }
 
     @PutMapping(value = "/blogpost/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> editBlogPost(@PathVariable Long id, 
                                             @Valid @ModelAttribute BlogPostUpdateData blogPostUpdateData) {
         log.info("Update blog post id={} title='{}' author='{}'", id, blogPostUpdateData.getTitle(), blogPostUpdateData.getAuthor());
-        return ResponseEntity.ok(blogPostService.updateBlogPost(id, blogPostUpdateData));
+
+        BlogPost updatedBlogPost = blogPostService.updateBlogPost(id, blogPostUpdateData);
+
+        // Construct absolute image url if image Url is present
+        if (updatedBlogPost != null && updatedBlogPost.getImageUrl() != null) {
+            updatedBlogPost.setImageUrl(UrlBuilder.buildFullUrl(updatedBlogPost.getImageUrl()));
+            log.info("Constructed absolute image URL: {}", updatedBlogPost.getImageUrl());
+        }
+        return ResponseEntity.ok(updatedBlogPost);
     }
 
     @DeleteMapping("/{id}")
