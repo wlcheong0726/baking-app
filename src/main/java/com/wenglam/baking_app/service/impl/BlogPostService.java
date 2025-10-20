@@ -9,32 +9,38 @@ import com.wenglam.baking_app.dto.BlogPostCreateData;
 import com.wenglam.baking_app.dto.BlogPostUpdateData;
 import com.wenglam.baking_app.entity.BlogPost;
 import com.wenglam.baking_app.repository.BlogPostRepository;
-import com.wenglam.baking_app.service.FileStorageService;
+import com.wenglam.baking_app.service.ImageFileStorageService;
 import com.wenglam.baking_app.service.IBlogPostService;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BlogPostService implements IBlogPostService {
 
     private final BlogPostRepository blogPostRepository;
-    private final FileStorageService fileStorageService;
+    private final ImageFileStorageService imageFileStorageService;
 
     @Override
     public BlogPost createBlogPost(BlogPostCreateData blogPostCreateData) {
 
+        log.debug("Blog post create data from frontend: " + blogPostCreateData.toString());
+
         String imageUrl = null;
         if (blogPostCreateData.getImageFile() != null && !blogPostCreateData.getImageFile().isEmpty()) {
-            imageUrl = fileStorageService.store(blogPostCreateData.getImageFile());
+            imageUrl = imageFileStorageService.store(blogPostCreateData.getImageFile());
         }
 
         BlogPost blogPostToBeCreated = new BlogPost();
-        blogPostToBeCreated.setAuthor(blogPostCreateData.getAuthor());
+        blogPostToBeCreated.setTitle(blogPostCreateData.getTitle());
         blogPostToBeCreated.setContent(blogPostCreateData.getContent());
         blogPostToBeCreated.setAuthor(blogPostCreateData.getAuthor());
         blogPostToBeCreated.setImageUrl(imageUrl);
+
+        log.info("Creating blog post title='{}' author='{}'", blogPostToBeCreated.getTitle(), blogPostToBeCreated.getAuthor());
 
         return blogPostRepository.save(blogPostToBeCreated);
     }
@@ -46,14 +52,20 @@ public class BlogPostService implements IBlogPostService {
 
     @Override
     public BlogPost getBlogPostById(Long id) {
-        return blogPostRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Blog post with ID " + id + " not found."));
+        if (!blogPostRepository.existsById(id)) {
+            log.warn("Blog post not found id={}", id);
+
+            throw new EntityNotFoundException(
+                    "Unable to delete blog post with ID " + id + ". Blog post cannot be found.");
+        }
+
+        return blogPostRepository.findById(id).get();
     }
 
     @Override
     public BlogPost updateBlogPost(Long id, BlogPostUpdateData blogPostUpdateData) {
 
-        System.out.println("blog post update data from frontend: " + blogPostUpdateData.toString());
+        log.debug("Blog post update data from frontend: " + blogPostUpdateData.toString());
         BlogPost blogPostToBeUpdated = blogPostRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Blog post not found with id " + id));
 
         String imageUrl = null; // For scenarios where pic gets deleted or never was uploaded
@@ -62,7 +74,7 @@ public class BlogPostService implements IBlogPostService {
             imageUrl = blogPostUpdateData.getImageUrl(); 
         } else if (blogPostUpdateData.getImageFile() != null && !blogPostUpdateData.getImageFile().isEmpty()) {
             // Handles scenario where the uploaded picture has been changed
-            imageUrl = fileStorageService.store(blogPostUpdateData.getImageFile());
+            imageUrl = imageFileStorageService.store(blogPostUpdateData.getImageFile());
         }
 
         blogPostToBeUpdated.setTitle(blogPostUpdateData.getTitle());
@@ -72,6 +84,8 @@ public class BlogPostService implements IBlogPostService {
         blogPostToBeUpdated.setUpdatedAt(Instant.now()); // TODO: add updated at datetime
         blogPostToBeUpdated.setUpdatedBy(blogPostUpdateData.getAuthor()); // Amend in the future if allow other users to update
 
+        log.info("Updating blog post id={} title='{}' author='{}'", blogPostToBeUpdated.getId(), blogPostToBeUpdated.getTitle(), blogPostToBeUpdated.getAuthor());
+
         return blogPostRepository.save(blogPostToBeUpdated);
     }
 
@@ -80,6 +94,9 @@ public class BlogPostService implements IBlogPostService {
             throw new EntityNotFoundException(
                     "Unable to delete blog post with ID " + id + ". Blog post cannot be found.");
         }
+
+        log.info("Deleting blog post id={}", id);
+
         blogPostRepository.deleteById(id);
     }
 }
