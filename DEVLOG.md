@@ -163,5 +163,58 @@ FRONTEND:
     - Frontend sends the same Url to backend if same pic is kept, new file sent if pic is changed, no data on file or Url sent if end state is no pic
 
 BACKEND:
-- Updated backend to handle the above scenarios by identifying whether there's an Url or file received from frontend
-- 
+- Updated backend to handle the above scenarios by identifying whether there's an Url or file received from frontend.
+
+
+## 01 Oct 2025
+BACKEND:
+- Added new branch - feature/edit-blog-to-enable-image-change
+- Moved createBlogPost() logic from controller to service for better separation of concerns and keeping controllers thin.
+- Added DTOs: BlogPostBaseData (abstract), BlogPostCreateData, BlogPostUpdateData for data transfer and image handling.
+- Updated controller methods to use @ModelAttribute for binding form data to DTOs.
+- Replaced @PrePersist with Hibernate @CreationTimestamp and @UpdateTimestamp for automatic timestamps - reduce dependency on type of db.
+- Updated BlogPostService to handle image scenarios (keep, replace, remove) and set updatedAt / updatedBy.
+- Interface methods updated to accept DTOs instead of entity.
+- Temporarily commented out BlogPostServiceTest (to update later).
+
+TODO:
+- Fix createBlogPost() title field duplication.
+- Update service unit tests for new DTOs.
+- Add integration tests for create/update/delete flows.
+
+
+## 03 Oct 2025
+BACKEND:
+- New branch: feature/global-exception-handler-and-validation.
+- pom.xml - added actuator, openapi and validation starter.
+- Added ErrorResponseDto to unify error response details.
+- Added GlobalExceptionHnadler to handle all possible errors in the app - internal server, illegal argument, entity not found etc.
+- Updated application.properties to contain file storage properties such as allowed content types, file and request size.
+- ImageFileStorageService - renamed from FileStorageService; added content type control flow and throws illegalargumentexception; restricted file size max 5MB
+- Added field validation for BlogPostBaseData DTO so it's validated when data comes in from client.
+- BlogPostController - deleted try catch block in deleteBlogPost to keep controller thin and returning void responseentity following best practice - code 204.
+
+
+## 06 Oct 2025
+BACKEND:
+- application.properties - added logging level and set to info
+- Deleted sys.out and replaced with logs throughout the app where appropriate e.g. log.warn for invalid input or log.error for serious problems - sth that needs attention immediately.
+
+
+## 07 Oct 2025
+BACKEND:
+- New branch: update-tests
+- Updated all tests BlogPostServiceTest according to the updated BlogPostService, and grouped in subclasses according to CRUD operations.
+- Updated BlogPostService getBlogPostById error message to reflect the error.
+
+
+## 09 Oct 2025
+BACKEND:
+- feature/global-exception-handler-and-validation:
+    - Added ByteUtil class to handle conversion of size string to actual byte number and format bytes to a human-readable string etc 1024 B to 1 KB.
+    - In ImageFileStorageService - use the ByteUtil to handle max file size check.
+
+- update-tests:
+    - BlogPostServiceTest - added fail test for createBlogPostWithImage method.
+    - Added new test class - ImageFileStorageServiceTest - to test successful and unsuccessful scenarios of image upload.
+    - TODO: ImageFileStorageService - need to review type of exception thrown with content type.
