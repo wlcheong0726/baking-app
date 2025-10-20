@@ -139,3 +139,29 @@ FRONTEND:
 BACKEND:
 - Added System.out.println to print paths images being saved to disk.
 - Updated .gitignore to prevent resource folder - uploads/ - from being uploaded to online repository.
+
+
+## 29 Sept 2025
+FRONTEND:
+- Updated blog form (edit mode) to show image as preview if exists.
+- Updated editBlog function to send updated blog data to backend - needs updating as there's a bug where blog data is lost when there's no change.
+
+BACKEND:
+- Moved business logic of create blog post function from controller to service class for better separations of concern.
+- Updated updateBlogPost method in BlogPostService to handle update.
+- Created DTO clases: BlogPostBaseData class as parent and two children - BlogPostCreateData and BlogPostUpdateData classes for data transfer from frontend to backend.
+- Using @CreationTimestamp and @UpdateTimestamp for createdAt and updatedAt at BlogPost - Hibernate creates timestamp automatically in Java.
+
+
+## 30 Sept 2025
+FRONTEND:
+- Updated editBlog function to updating pic loaded in the below scenarios:
+    Scenario 1: Blog Post to be edited has pic uploaded initially
+    Change: 1. Keep same pic 2. Delete pic 3. Upload another pic
+    Scenario 2: Blog Post to be edited doesn't have pic initially
+    Change: 1. Keep the same (no pic) 2. Upload a new pic
+    - Frontend sends the same Url to backend if same pic is kept, new file sent if pic is changed, no data on file or Url sent if end state is no pic
+
+BACKEND:
+- Updated backend to handle the above scenarios by identifying whether there's an Url or file received from frontend
+- 
