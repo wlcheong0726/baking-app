@@ -194,12 +194,27 @@ BACKEND:
 - Added field validation for BlogPostBaseData DTO so it's validated when data comes in from client.
 - BlogPostController - deleted try catch block in deleteBlogPost to keep controller thin and returning void responseentity following best practice - code 204.
 
+
 ## 06 Oct 2025
 BACKEND:
 - application.properties - added logging level and set to info
 - Deleted sys.out and replaced with logs throughout the app where appropriate e.g. log.warn for invalid input or log.error for serious problems - sth that needs attention immediately.
 
+
+## 07 Oct 2025
+BACKEND:
+- New branch: update-tests
+- Updated all tests BlogPostServiceTest according to the updated BlogPostService, and grouped in subclasses according to CRUD operations.
+- Updated BlogPostService getBlogPostById error message to reflect the error.
+
+
 ## 09 Oct 2025
 BACKEND:
-- Added ByteUtil class to handle conversion of size string to actual byte number and format bytes to a human-readable string etc 1024 B to 1 KB.
-- In ImageFileStorageService - use the ByteUtil to handle max file size check.
+- feature/global-exception-handler-and-validation:
+    - Added ByteUtil class to handle conversion of size string to actual byte number and format bytes to a human-readable string etc 1024 B to 1 KB.
+    - In ImageFileStorageService - use the ByteUtil to handle max file size check.
+
+- update-tests:
+    - BlogPostServiceTest - added fail test for createBlogPostWithImage method.
+    - Added new test class - ImageFileStorageServiceTest - to test successful and unsuccessful scenarios of image upload.
+    - TODO: ImageFileStorageService - need to review type of exception thrown with content type.
