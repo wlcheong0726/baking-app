@@ -218,3 +218,9 @@ BACKEND:
     - BlogPostServiceTest - added fail test for createBlogPostWithImage method.
     - Added new test class - ImageFileStorageServiceTest - to test successful and unsuccessful scenarios of image upload.
     - TODO: ImageFileStorageService - need to review type of exception thrown with content type.
+
+
+
+## 17 Oct 2025
+BACKEND:
+- Added constraints tests in BlogPostRepositoryTest to ensure constraint properties are set correctly, if not, exceptions are thrown as expected
