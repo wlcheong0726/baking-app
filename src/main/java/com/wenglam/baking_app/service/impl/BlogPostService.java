@@ -3,6 +3,7 @@ package com.wenglam.baking_app.service.impl;
 import java.time.Instant;
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.wenglam.baking_app.dto.BlogPostCreateData;
@@ -48,6 +49,16 @@ public class BlogPostService implements IBlogPostService {
     @Override
     public List<BlogPost> getAllBlogPosts() {
         return blogPostRepository.findAll();
+    }
+
+    @Override
+    public List<BlogPost> getBlogPostsWithConditions(String keyword, Pageable pageable) {
+        if (keyword != null && !keyword.isEmpty()) {
+            log.info("Searching blog posts with keyword='{}'", keyword);
+            return blogPostRepository.searchBlogPosts(keyword, pageable).getContent();
+        } else {
+            return blogPostRepository.findAll(pageable).getContent();
+        }
     }
 
     @Override
