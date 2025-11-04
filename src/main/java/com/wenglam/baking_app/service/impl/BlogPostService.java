@@ -3,11 +3,13 @@ package com.wenglam.baking_app.service.impl;
 import java.time.Instant;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.wenglam.baking_app.dto.BlogPostCreateData;
 import com.wenglam.baking_app.dto.BlogPostUpdateData;
+import com.wenglam.baking_app.dto.PageResponse;
 import com.wenglam.baking_app.entity.BlogPost;
 import com.wenglam.baking_app.repository.BlogPostRepository;
 import com.wenglam.baking_app.service.ImageFileStorageService;
@@ -52,13 +54,24 @@ public class BlogPostService implements IBlogPostService {
     }
 
     @Override
-    public List<BlogPost> getBlogPostsWithConditions(String keyword, Pageable pageable) {
+    public PageResponse<BlogPost> getBlogPostsWithConditions(String keyword, Pageable pageable) {
+        Page<BlogPost> pageBlogPosts;
+        
         if (keyword != null && !keyword.isEmpty()) {
             log.info("Searching blog posts with keyword='{}'", keyword);
-            return blogPostRepository.searchBlogPosts(keyword, pageable).getContent();
+            pageBlogPosts = blogPostRepository.searchBlogPosts(keyword, pageable);
         } else {
-            return blogPostRepository.findAll(pageable).getContent();
+            pageBlogPosts = blogPostRepository.findAll(pageable);
         }
+
+        return new PageResponse<BlogPost>(
+                pageBlogPosts.getTotalElements(), // total num of elements
+                pageBlogPosts.getContent(), // list of blog posts
+                pageBlogPosts.getNumber() + 1, // current page
+                pageBlogPosts.getNumberOfElements(), // page size
+                pageBlogPosts.getTotalPages(),
+                pageBlogPosts.isLast() // is last page
+            );
     }
 
     @Override
