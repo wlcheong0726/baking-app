@@ -3,6 +3,8 @@ package com.wenglam.baking_app.controller;
 import org.springframework.web.bind.annotation.RestController;
 import com.wenglam.baking_app.dto.BlogPostCreateData;
 import com.wenglam.baking_app.dto.BlogPostUpdateData;
+import com.wenglam.baking_app.dto.PageResponse;
+import com.wenglam.baking_app.entity.BlogPost;
 import com.wenglam.baking_app.service.IBlogPostService;
 
 import jakarta.validation.Valid;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -37,7 +40,7 @@ public class BlogPostController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getBlogPostsWithConditions(@RequestParam(required = false, defaultValue = "1") int pageNo,
+    public ResponseEntity<PageResponse<BlogPost>> getBlogPostsWithConditions(@RequestParam(required = false, defaultValue = "1") int pageNo,
                                                         @RequestParam(required = false, defaultValue = "20") int pageSize,
                                                         @RequestParam(required = false, defaultValue = "id") String sortBy,
                                                         @RequestParam(required = false, defaultValue = "asc") String sortDir,
