@@ -300,7 +300,6 @@ public class BlogPostServiceTest {
             assertNotNull(foundBlogPosts);
             assertEquals(filteredBlogPosts.size(), foundBlogPosts.content().size());
             assertEquals(filteredBlogPosts, foundBlogPosts.content());
-            System.out.println("total elements: " + foundBlogPosts.totalElements());
             assertEquals(11, foundBlogPosts.totalElements());
             assertEquals(pageable.getPageNumber() + 1, foundBlogPosts.currentPage());
             assertEquals(3, foundBlogPosts.pageSize());
