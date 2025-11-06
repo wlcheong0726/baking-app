@@ -131,6 +131,7 @@ BACKEND:
 ## 28 Sept 2025
 FRONTEND:
 - Added branch feature/upload-image-when-adding-new-blog-and-display-image.
+- New branch- feature/edit-blog-form-handle-uploaded-imagae-and-image-reselect
 - Updated timeout for making HTTP requests to backend from 10 sec to 60 sec to allow longer request processing.
 - Updated Blogs section to display blogs with image if there is one.
 - Updated blog form for creating new blog to enable uploading one image and remove image, preview also available.
@@ -182,6 +183,11 @@ TODO:
 - Update service unit tests for new DTOs.
 - Add integration tests for create/update/delete flows.
 
+FRONTEND:
+feature/edit-blog-form-handle-uploaded-imagae-and-image-reselect
+- moved setting default form data logic into useState directly;
+- added useEffect to setImagePreview for editing blog;
+- updated editBlog to handle different scenarios of editing pic uploaded
 
 ## 03 Oct 2025
 BACKEND:
@@ -218,3 +224,44 @@ BACKEND:
     - BlogPostServiceTest - added fail test for createBlogPostWithImage method.
     - Added new test class - ImageFileStorageServiceTest - to test successful and unsuccessful scenarios of image upload.
     - TODO: ImageFileStorageService - need to review type of exception thrown with content type.
+
+
+## 21 Oct 2025
+BACKEND:
+1. BlogPostController: separated get all blog posts and get blog posts with pagination + search into two endpoints. TODO: need to review and see if separating the two is the best option
+2. IBlogPostService & BlogPostService: new method getBlogPostWithConditions takes keyword and pageable as parameters for pagination & search/filter - keyword can be null but always takes pageable as it has default values in controller - always finds Page objects from repo.
+3. BlogPostRepository - added new method searchBlogPosts with custom query using JPQL to return blog posts by keyword & pageable object.
+
+
+## 31 Oct 2025
+FRONTEND:
+- new branch: feature/pagination-search
+- BlogsPage - added search bar and pagination elements: page no., page navigation buttons, sort direction dropdown, sort by dropdown and added stylings for these
+- updated blog card so it's always within browser frame and error code for creating blog
+
+
+## 03 Nov 2025
+FRONTEND:
+- updated stylings and comments for pagination and search
+
+
+## 04 Nov 2025
+BACKEND:
+1. PageResponse: new record class to structure return type for getBlogPostsWithConditions() in service - PageResponse<BlogPost> - holds metadata for Page object and blog posts list returned.
+2. BlogPostController, IBlogPostService, BlogPostService - updated return type and logic that enables it
+
+FRONTEND:
+- added library - react-icons
+- updated stylings for pagination and search
+- moved loading and error for fetchblog logic to only apply for BlogsList and not the whole BlogsPage - meaning pagination and search elements will always display on page regardless of whether blogslist is fetched from server
+
+
+## 05 Nov 2025
+BACKEND:
+- updated BlogPostServiceTest to include success tests for pagination & search
+- added argument captor for get all blogs tests
+- merged feature/pagination-sorting-filtering into develop
+
+FRONTEND:
+- deleted commented out code
+- merged feature/pagination-search into develop
