@@ -4,6 +4,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.wenglam.baking_app.dto.BlogPostCreateData;
 import com.wenglam.baking_app.dto.BlogPostUpdateData;
 import com.wenglam.baking_app.entity.BlogPost;
+import com.wenglam.baking_app.dto.PageResponse;
+import com.wenglam.baking_app.entity.BlogPost;
 import com.wenglam.baking_app.service.IBlogPostService;
 import com.wenglam.baking_app.utility.UrlBuilder;
 
@@ -12,8 +14,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -30,9 +36,21 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class BlogPostController {
     private final IBlogPostService blogPostService;
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<?> getAllBlogPosts() {
         return ResponseEntity.ok(blogPostService.getAllBlogPosts());
+    }
+
+    @GetMapping
+    public ResponseEntity<PageResponse<BlogPost>> getBlogPostsWithConditions(@RequestParam(required = false, defaultValue = "1") int pageNo,
+                                                        @RequestParam(required = false, defaultValue = "20") int pageSize,
+                                                        @RequestParam(required = false, defaultValue = "id") String sortBy,
+                                                        @RequestParam(required = false, defaultValue = "asc") String sortDir,
+                                                        @RequestParam(required = false) String keyword
+                                                        ) {
+        Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+
+        return ResponseEntity.ok(blogPostService.getBlogPostsWithConditions(keyword, PageRequest.of(pageNo-1, pageSize, sort)));
     }
 
     @GetMapping("/blogpost/{id}")

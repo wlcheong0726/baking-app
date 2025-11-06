@@ -13,10 +13,16 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.wenglam.baking_app.dto.BlogPostCreateData;
 import com.wenglam.baking_app.dto.BlogPostUpdateData;
+import com.wenglam.baking_app.dto.PageResponse;
 import com.wenglam.baking_app.entity.BlogPost;
 import com.wenglam.baking_app.repository.BlogPostRepository;
 import com.wenglam.baking_app.service.ImageFileStorageService;
@@ -62,6 +68,7 @@ public class BlogPostServiceTest {
              * test that the created blog post has an ID (indicating it was saved)
              * test that the repository's save method was called once
              */
+
             BlogPostCreateData blogPostCreateData = new BlogPostCreateData();
             blogPostCreateData.setTitle("Test Title");
             blogPostCreateData.setAuthor("Test Author");
@@ -70,28 +77,31 @@ public class BlogPostServiceTest {
 
             String imageUrl = "http://localhost:8080/uploads/image.png";
 
-            BlogPost savedBlogPost = new BlogPost();
-            savedBlogPost.setTitle(blogPostCreateData.getTitle());
-            savedBlogPost.setContent(blogPostCreateData.getContent());
-            savedBlogPost.setAuthor(blogPostCreateData.getAuthor());
-            savedBlogPost.setImageUrl(imageUrl);
-            savedBlogPost.setCreatedAt(Instant.now());
-
             when(imageFileStorageServiceMock.store(blogPostCreateData.getImageFile())).thenReturn(imageUrl);
 
             when(blogPostRepositoryMock.save(any(BlogPost.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
             BlogPost createdBlogPost = blogPostService.createBlogPost(blogPostCreateData);
 
+            ArgumentCaptor<BlogPost> blogPostCaptor = ArgumentCaptor.forClass(BlogPost.class);
+            verify(blogPostRepositoryMock).save(blogPostCaptor.capture());
+            BlogPost blogPostSaved = blogPostCaptor.getValue();
+
             assertAll(
-                    () -> assertEquals(createdBlogPost.getTitle(), savedBlogPost.getTitle()),
-                    () -> assertEquals(createdBlogPost.getContent(), savedBlogPost.getContent()),
-                    () -> assertEquals(createdBlogPost.getAuthor(), savedBlogPost.getAuthor()),
-                    () -> assertEquals(createdBlogPost.getImageUrl(), savedBlogPost.getImageUrl()),
-                    () -> assertNotNull(savedBlogPost.getCreatedAt()),
-                    () -> assertNull(savedBlogPost.getUpdatedAt()),
-                    () -> assertNull(savedBlogPost.getUpdatedBy()));
-            assertNotNull(savedBlogPost);
+                        () -> assertNotNull(createdBlogPost),
+                        () -> assertEquals(createdBlogPost.getTitle(), blogPostCreateData.getTitle()),
+                        () -> assertEquals(createdBlogPost.getContent(), blogPostCreateData.getContent()),
+                        () -> assertEquals(createdBlogPost.getAuthor(), blogPostCreateData.getAuthor()),
+                        () -> assertEquals(createdBlogPost.getImageUrl(), imageUrl),
+                        () -> assertNull(createdBlogPost.getUpdatedBy()),
+
+                        // Assertions on Captured blogPostSaved
+                        () -> assertEquals(blogPostSaved.getTitle(), blogPostCreateData.getTitle()),
+                        () -> assertEquals(blogPostSaved.getContent(), blogPostCreateData.getContent()),
+                        () -> assertEquals(blogPostSaved.getAuthor(), blogPostCreateData.getAuthor()),
+                        () -> assertEquals(blogPostSaved.getImageUrl(), imageUrl),
+                        () -> assertNull(blogPostSaved.getUpdatedBy())
+                    );
 
             verify(imageFileStorageServiceMock, times(1)).store(blogPostCreateData.getImageFile());
             verify(blogPostRepositoryMock, times(1)).save(any(BlogPost.class));
@@ -104,25 +114,29 @@ public class BlogPostServiceTest {
             blogPostCreateData.setAuthor("Test Author");
             blogPostCreateData.setContent("Test Content");
 
-            BlogPost savedBlogPost = new BlogPost();
-            savedBlogPost.setTitle(blogPostCreateData.getTitle());
-            savedBlogPost.setContent(blogPostCreateData.getContent());
-            savedBlogPost.setAuthor(blogPostCreateData.getAuthor());
-            savedBlogPost.setCreatedAt(Instant.now());
-
             when(blogPostRepositoryMock.save(any(BlogPost.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
             BlogPost createdBlogPost = blogPostService.createBlogPost(blogPostCreateData);
 
+            ArgumentCaptor<BlogPost> blogPostCaptor = ArgumentCaptor.forClass(BlogPost.class);
+            verify(blogPostRepositoryMock).save(blogPostCaptor.capture());
+            BlogPost blogPostSaved = blogPostCaptor.getValue();
+
             assertAll(
-                    () -> assertEquals(createdBlogPost.getTitle(), savedBlogPost.getTitle()),
-                    () -> assertEquals(createdBlogPost.getContent(), savedBlogPost.getContent()),
-                    () -> assertEquals(createdBlogPost.getAuthor(), savedBlogPost.getAuthor()),
-                    () -> assertNull(savedBlogPost.getImageUrl()),
-                    () -> assertNotNull(savedBlogPost.getCreatedAt()),
-                    () -> assertNull(savedBlogPost.getUpdatedAt()),
-                    () -> assertNull(savedBlogPost.getUpdatedBy()));
-            assertNotNull(savedBlogPost);
+                        () -> assertNotNull(createdBlogPost),
+                        () -> assertEquals(createdBlogPost.getTitle(), blogPostCreateData.getTitle()),
+                        () -> assertEquals(createdBlogPost.getContent(), blogPostCreateData.getContent()),
+                        () -> assertEquals(createdBlogPost.getAuthor(), blogPostCreateData.getAuthor()),
+                        () -> assertNull(createdBlogPost.getImageUrl()),
+                        () -> assertNull(createdBlogPost.getUpdatedBy()),
+
+                        // Assertions on Captured blogPostSaved
+                        () -> assertEquals(blogPostSaved.getTitle(), blogPostCreateData.getTitle()),
+                        () -> assertEquals(blogPostSaved.getContent(), blogPostCreateData.getContent()),
+                        () -> assertEquals(blogPostSaved.getAuthor(), blogPostCreateData.getAuthor()),
+                        () -> assertNull(blogPostSaved.getImageUrl()),
+                        () -> assertNull(blogPostSaved.getUpdatedBy())
+                    );
 
             verify(imageFileStorageServiceMock, never()).store(any());
             verify(blogPostRepositoryMock, times(1)).save(any(BlogPost.class));
@@ -148,13 +162,6 @@ public class BlogPostServiceTest {
         @Test
         void getAllBlogPosts_Success() {
             // Given
-            blogPost = new BlogPost();
-            blogPost.setId(1L);
-            blogPost.setTitle("Test Title");
-            blogPost.setContent("Test Content");
-            blogPost.setAuthor("Test Author");
-            blogPost.setCreatedAt(Instant.now());
-
             BlogPost blogPost2 = new BlogPost();
             blogPost2.setId(2L);
             blogPost2.setTitle("Test Title2");
@@ -185,6 +192,149 @@ public class BlogPostServiceTest {
 
             assertTrue(foundBlogPosts.isEmpty());
             verify(blogPostRepositoryMock, times(1)).findAll();
+        }
+    }
+
+    @Nested
+    class GetBlogPostsWithConditionsTests {
+        @Test
+        void getBlogPostsWithKeyword_Success() {
+            // Given
+            String keyword = "Test";
+            int pageNo = 1, pageSize = 4;
+            String sortBy = "id";
+            String sortDir = "asc";
+            Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+
+            Pageable pageable = PageRequest.of(pageNo-1, pageSize, sort);
+
+            List<BlogPost> filteredBlogPosts = List.of(blogPost, new BlogPost(), new BlogPost(), new BlogPost());
+            Page<BlogPost> pageBlogPosts = new PageImpl<>(filteredBlogPosts, pageable, 9);
+
+            when(blogPostRepositoryMock.searchBlogPosts(keyword,pageable)).thenReturn(pageBlogPosts);
+
+            PageResponse<BlogPost> foundBlogPosts = blogPostService.getBlogPostsWithConditions(keyword, pageable);
+
+            ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
+            verify(blogPostRepositoryMock).searchBlogPosts(eq(keyword), pageableCaptor.capture());
+
+            Pageable usedPageable = pageableCaptor.getValue();
+
+            assertEquals(0, usedPageable.getPageNumber());
+            assertEquals(4, usedPageable.getPageSize());
+            assertEquals(Sort.by("id").ascending(), usedPageable.getSort());
+
+            assertNotNull(foundBlogPosts);
+            assertEquals(filteredBlogPosts.size(), foundBlogPosts.content().size());
+            assertEquals(filteredBlogPosts, foundBlogPosts.content());
+            assertEquals(9, foundBlogPosts.totalElements());
+            assertEquals(pageable.getPageNumber() + 1, foundBlogPosts.currentPage());
+            assertEquals(4, foundBlogPosts.pageSize());
+            assertEquals((int) Math.ceil((double) 9 / pageable.getPageSize()), foundBlogPosts.totalPages());
+            assertFalse(foundBlogPosts.isLastPage());
+
+            // It's not necessary to check whether keyword exists in contents of PageResponse object as no actual filtering operation is performed in test.
+
+            verify(blogPostRepositoryMock, times(1)).searchBlogPosts(keyword, pageable);
+            verify(blogPostRepositoryMock, never()).findAll();
+        }
+
+        @Test
+        void getBlogPostsWithoutKeyword_Success() {
+            // Given
+            String keyword = "";
+            int pageNo = 1, pageSize = 3;
+            String sortBy = "id";
+            String sortDir = "asc";
+            Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+
+            Pageable pageable = PageRequest.of(pageNo-1, pageSize, sort);
+
+            List<BlogPost> blogPosts = List.of();
+            Page<BlogPost> pageBlogPosts = new PageImpl<>(blogPosts, pageable, 0);
+            when(blogPostRepositoryMock.findAll(pageable)).thenReturn(pageBlogPosts);
+
+            PageResponse<BlogPost> foundBlogPosts = blogPostService.getBlogPostsWithConditions(keyword, pageable);
+
+            ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
+            verify(blogPostRepositoryMock).findAll(pageableCaptor.capture());
+
+            Pageable usedPageable = pageableCaptor.getValue();
+
+            assertEquals(0, usedPageable.getPageNumber());
+            assertEquals(3, usedPageable.getPageSize());
+            assertEquals(Sort.by("id").ascending(), usedPageable.getSort());
+
+            assertNotNull(foundBlogPosts);
+            assertEquals(blogPosts.size(), foundBlogPosts.content().size());
+            assertEquals(blogPosts, foundBlogPosts.content());
+            assertEquals(0, foundBlogPosts.totalElements());
+            assertEquals(pageable.getPageNumber() + 1, foundBlogPosts.currentPage());
+            assertEquals(0, foundBlogPosts.pageSize());
+            assertEquals((int) Math.ceil((double) 0 / pageable.getPageSize()), foundBlogPosts.totalPages());
+            assertTrue(foundBlogPosts.isLastPage());
+
+            verify(blogPostRepositoryMock, never()).searchBlogPosts(keyword, pageable);
+            verify(blogPostRepositoryMock, times(1)).findAll(pageable);
+        }
+
+        @Test
+        void getBlogPostsWithBlankKeyword_Success() {
+            // Given
+            int pageNo = 1, pageSize = 3;
+            String sortBy = "id";
+            String sortDir = "asc";
+            Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+
+            Pageable pageable = PageRequest.of(pageNo-1, pageSize, sort);
+
+            List<BlogPost> blogPosts = List.of(blogPost, new BlogPost(), new BlogPost());
+            Page<BlogPost> pageBlogPosts = new PageImpl<>(blogPosts, pageable, 20);
+            when(blogPostRepositoryMock.findAll(pageable)).thenReturn(pageBlogPosts);
+
+            PageResponse<BlogPost> foundBlogPosts = blogPostService.getBlogPostsWithConditions(null, pageable);
+
+            assertNotNull(foundBlogPosts);
+            assertEquals(blogPosts.size(), foundBlogPosts.content().size());
+            assertEquals(blogPosts, foundBlogPosts.content());
+            assertEquals(20, foundBlogPosts.totalElements());
+            assertEquals(pageable.getPageNumber() + 1, foundBlogPosts.currentPage());
+            assertEquals(3, foundBlogPosts.pageSize());
+            assertEquals((int) Math.ceil((double) 20 / pageable.getPageSize()), foundBlogPosts.totalPages());
+            assertFalse(foundBlogPosts.isLastPage());
+
+            verify(blogPostRepositoryMock, never()).searchBlogPosts(null, pageable);
+            verify(blogPostRepositoryMock, times(1)).findAll(pageable);
+        }
+
+        @Test
+        void getLastPageWithKeyword_Success() {
+            // Given
+            String keyword = "Test";
+            int pageNo = 3, pageSize = 4;
+            String sortBy = "id";
+            String sortDir = "asc";
+            Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+
+            Pageable pageable = PageRequest.of(pageNo-1, pageSize, sort);
+
+            List<BlogPost> filteredBlogPosts = List.of(blogPost, new BlogPost(), new BlogPost());
+            Page<BlogPost> pageBlogPosts = new PageImpl<>(filteredBlogPosts, pageable, 11);
+            when(blogPostRepositoryMock.searchBlogPosts(keyword,pageable)).thenReturn(pageBlogPosts);
+
+            PageResponse<BlogPost> foundBlogPosts = blogPostService.getBlogPostsWithConditions(keyword, pageable);
+
+            assertNotNull(foundBlogPosts);
+            assertEquals(filteredBlogPosts.size(), foundBlogPosts.content().size());
+            assertEquals(filteredBlogPosts, foundBlogPosts.content());
+            assertEquals(11, foundBlogPosts.totalElements());
+            assertEquals(pageable.getPageNumber() + 1, foundBlogPosts.currentPage());
+            assertEquals(3, foundBlogPosts.pageSize());
+            assertEquals((int) Math.ceil((double) 11 / pageable.getPageSize()), foundBlogPosts.totalPages());
+            assertTrue(foundBlogPosts.isLastPage());
+
+            verify(blogPostRepositoryMock, times(1)).searchBlogPosts(keyword, pageable);
+            verify(blogPostRepositoryMock, never()).findAll();
         }
     }
 
