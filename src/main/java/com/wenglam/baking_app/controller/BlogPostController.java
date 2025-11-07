@@ -50,7 +50,16 @@ public class BlogPostController {
                                                         ) {
         Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
 
-        return ResponseEntity.ok(blogPostService.getBlogPostsWithConditions(keyword, PageRequest.of(pageNo-1, pageSize, sort)));
+        PageResponse<BlogPost> blogPostResponse = blogPostService.getBlogPostsWithConditions(keyword, PageRequest.of(pageNo-1, pageSize, sort));
+
+        for (BlogPost blogPost : blogPostResponse.content()) {
+            if (blogPost.getImageUrl() != null) {
+                blogPost.setImageUrl(UrlBuilder.buildFullUrl(blogPost.getImageUrl()));
+                log.info("Constructed absolute image URL: {}", blogPost.getImageUrl());
+            }
+        }
+
+        return ResponseEntity.ok(blogPostResponse);
     }
 
     @GetMapping("/blogpost/{id}")
@@ -76,6 +85,8 @@ public class BlogPostController {
     public ResponseEntity<?> updateBlogPost(@PathVariable Long id, 
                                             @Valid @ModelAttribute BlogPostUpdateData blogPostUpdateData) {
         log.info("Update blog post id={} title='{}' author='{}'", id, blogPostUpdateData.getTitle(), blogPostUpdateData.getAuthor());
+
+        // System.out.println("edit blog image: " + blogPostUpdateData.getImageUrl());
 
         BlogPost updatedBlogPost = blogPostService.updateBlogPost(id, blogPostUpdateData);
 
