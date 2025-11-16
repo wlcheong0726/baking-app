@@ -9,7 +9,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-@Configuration
+@Configuration // class level - ths class is a source of bean definitions 
+/**
+ * same as <beans> in xml config
+ * allows inter-bean dependencies to be injected
+ */
 public class CorsConfig {
 
     @Bean
