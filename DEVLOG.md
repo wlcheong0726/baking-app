@@ -270,3 +270,15 @@ BACKEND:
 FRONTEND:
 - deleted commented out code
 - merged feature/pagination-search into develop
+
+
+
+## 07 Nov 2025
+BACKEND:
+- moved application-test.properties to sit under test/resources - following best practice
+- frontend was not displaying blog post pic correctly when page blog image is updated and when page refreshes
+    - fixed page refresh not displaying image error by first updating controller to return full url on get all blogs with conditions
+    - fixed update blog post image error by updating updateBlogPost method logic in BlogPostService - the if condition was faulty as db stores only image key while frontend receives full imageUrl
+        - logic updated to account for this
+- updated README to provide a more comprehensive introduction to project including features, an updated tech stack, design decisions etc
+    - added architecture diagram of project generated using VxPlain - mermaid code retrieved from it
