@@ -272,7 +272,6 @@ FRONTEND:
 - merged feature/pagination-search into develop
 
 
-
 ## 07 Nov 2025
 BACKEND:
 - moved application-test.properties to sit under test/resources - following best practice
