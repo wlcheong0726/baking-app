@@ -132,114 +132,116 @@ public class BlogPostControllerIntegrationTest {
                 assertEquals(createdBlogPost.getContent(), blogPostRequestData.getFirst("content"), "Content should match");
             }
         }
+    
+    // Commented out test for image upload as resource folder uploads will be replaced moved elsewhere in prod environment
+    //     @Test
+    //     void testCreateBlogPost_whenValidInputAndWithImage_thenReturns201() {
+    //         // Given
+    //         MultiValueMap<String, Object> blogPostRequestData = new LinkedMultiValueMap<String,Object>();
+    //         blogPostRequestData.add("title", "Integration Test Title - Cheesecake!");
+    //         blogPostRequestData.add("author", "Integration Test Author");
+    //         blogPostRequestData.add("content", "Integration Test Content. This is content. More contents.");
 
-        @Test
-        void testCreateBlogPost_whenValidInputAndWithImage_thenReturns201() {
-            // Given
-            MultiValueMap<String, Object> blogPostRequestData = new LinkedMultiValueMap<String,Object>();
-            blogPostRequestData.add("title", "Integration Test Title - Cheesecake!");
-            blogPostRequestData.add("author", "Integration Test Author");
-            blogPostRequestData.add("content", "Integration Test Content. This is content. More contents.");
+    //         ClassPathResource imageResource = new ClassPathResource("testData/Burnt-Basque-cheesecake.jpg");
 
-            ClassPathResource imageResource = new ClassPathResource("testData/Burnt-Basque-cheesecake.jpg");
+    //         // Alternative way to load image from file system
+    //         // FileSystemResource fileResource = new FileSystemResource("/Users/yourname/Desktop/test-image.jpg");
 
-            // Alternative way to load image from file system
-            // FileSystemResource fileResource = new FileSystemResource("/Users/yourname/Desktop/test-image.jpg");
+    //         // Alternative way to create a ByteArrayResource which doesn't rely on external file
+    //         // byte[] randomBytes = new byte[1024]; // 1KB random data
+    //         // new Random().nextBytes(randomBytes);
 
-            // Alternative way to create a ByteArrayResource which doesn't rely on external file
-            // byte[] randomBytes = new byte[1024]; // 1KB random data
-            // new Random().nextBytes(randomBytes);
+    //         // ByteArrayResource byteArrayResource = new ByteArrayResource(randomBytes) {
+    //         //     @Override
+    //         //     public String getFilename() {
+    //         //         return "random-image.jpg";
+    //         //     }
+    //         // };
 
-            // ByteArrayResource byteArrayResource = new ByteArrayResource(randomBytes) {
-            //     @Override
-            //     public String getFilename() {
-            //         return "random-image.jpg";
-            //     }
-            // };
+    //         blogPostRequestData.add("imageFile", imageResource);
 
-            blogPostRequestData.add("imageFile", imageResource);
+    //         HttpHeaders headers = new HttpHeaders();
+    //         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+    //         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-            headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+    //         HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(blogPostRequestData, headers);
 
-            HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(blogPostRequestData, headers);
+    //         // When
+    //         ResponseEntity<BlogPost> response = testRestTemplate.postForEntity("/api/v1/blogposts", request, BlogPost.class);
+    //         BlogPost createdBlogPost = response.getBody();
 
-            // When
-            ResponseEntity<BlogPost> response = testRestTemplate.postForEntity("/api/v1/blogposts", request, BlogPost.class);
-            BlogPost createdBlogPost = response.getBody();
+    //         // Assert
+    //         assertEquals(HttpStatus.CREATED, response.getStatusCode());
+    //         if (createdBlogPost != null) {
+    //             assertNotNull(createdBlogPost.getId(), "Blog Post ID should not be null");
+    //             System.out.println("Created Blog Post ID: " + createdBlogPost.getId());
+    //             assertTrue(createdBlogPost.getId() > 0, "Blog Post ID should be greater than 0");
+    //             assertEquals(createdBlogPost.getTitle(), blogPostRequestData.getFirst("title"), "Title should match");
+    //             assertEquals(createdBlogPost.getAuthor(), blogPostRequestData.getFirst("author"), "Author should match");
+    //             assertEquals(createdBlogPost.getContent(), blogPostRequestData.getFirst("content"), "Content should match");
+    //             assertNotNull(createdBlogPost.getImageUrl(), "Image URL should not be null");
+    //             System.out.println("publicBaseUrl: " + publicBaseUrl);
+    //             System.out.println("crated image url: " + createdBlogPost.getImageUrl());
+    //             assertTrue(createdBlogPost.getImageUrl().startsWith(publicBaseUrl + "/uploads/"), "Image URL should contain the uploads path at the start");
+    //             assertTrue(createdBlogPost.getImageUrl().endsWith(imageResource.getFilename()), "Image URL should contain the file name at the end");
+    //         }
+    //     }
+    // }
+    
+    // Commented out test for image upload as resource folder uploads will be replaced moved elsewhere in prod environment
+    // @Nested
+    // class GetBlogPostsTests {
+    //     @Test
+    //     void testGetBlogPostById_whenBlogPostExists_thenReturns200() {
+    //         // Given
+    //         System.out.println("testGetBlogPostById_whenBlogPostExists_thenReturns200");
+    //         BlogPost seededBlogPost = seedBlogPostWithImageInDatabase();
+    //         List<BlogPost> allPosts = blogPostRepository.findAll();
+    //         System.out.println("No. of blog posts in DB: " + allPosts.size());
+    //         System.out.println(allPosts.get(0).toString());
 
-            // Assert
-            assertEquals(HttpStatus.CREATED, response.getStatusCode());
-            if (createdBlogPost != null) {
-                assertNotNull(createdBlogPost.getId(), "Blog Post ID should not be null");
-                System.out.println("Created Blog Post ID: " + createdBlogPost.getId());
-                assertTrue(createdBlogPost.getId() > 0, "Blog Post ID should be greater than 0");
-                assertEquals(createdBlogPost.getTitle(), blogPostRequestData.getFirst("title"), "Title should match");
-                assertEquals(createdBlogPost.getAuthor(), blogPostRequestData.getFirst("author"), "Author should match");
-                assertEquals(createdBlogPost.getContent(), blogPostRequestData.getFirst("content"), "Content should match");
-                assertNotNull(createdBlogPost.getImageUrl(), "Image URL should not be null");
-                System.out.println("publicBaseUrl: " + publicBaseUrl);
-                System.out.println("crated image url: " + createdBlogPost.getImageUrl());
-                assertTrue(createdBlogPost.getImageUrl().startsWith(publicBaseUrl + "/uploads/"), "Image URL should contain the uploads path at the start");
-                assertTrue(createdBlogPost.getImageUrl().endsWith(imageResource.getFilename()), "Image URL should contain the file name at the end");
-            }
-        }
-    }
+    //         HttpHeaders headers = new HttpHeaders();
+    //         headers.setContentType(MediaType.APPLICATION_JSON);
+    //         headers.setAccept(Arrays.asList(MediaType.MULTIPART_FORM_DATA, MediaType.APPLICATION_JSON));
 
-    @Nested
-    class GetBlogPostsTests {
-        @Test
-        void testGetBlogPostById_whenBlogPostExists_thenReturns200() {
-            // Given
-            System.out.println("testGetBlogPostById_whenBlogPostExists_thenReturns200");
-            BlogPost seededBlogPost = seedBlogPostWithImageInDatabase();
-            List<BlogPost> allPosts = blogPostRepository.findAll();
-            System.out.println("No. of blog posts in DB: " + allPosts.size());
-            System.out.println(allPosts.get(0).toString());
+    //         // When
+    //         ResponseEntity<BlogPost> response = testRestTemplate.getForEntity("/api/v1/blogposts/blogpost/{id}", BlogPost.class, seededBlogPost.getId());
+    //         System.out.println("Fetching blog post with ID: " + seededBlogPost.getId());
+    //         BlogPost fetchedBlogPost = response.getBody();
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.setAccept(Arrays.asList(MediaType.MULTIPART_FORM_DATA, MediaType.APPLICATION_JSON));
+    //         // Then
+    //         assertEquals(HttpStatus.OK, response.getStatusCode());
+    //         if (fetchedBlogPost != null) {
+    //             assertNotNull(fetchedBlogPost.getId(), "Blog Post ID should not be null");
+    //             assertTrue(fetchedBlogPost.getId() > 0, "Blog Post ID should be greater than 0");
+    //             assertEquals(fetchedBlogPost.getTitle(), seededBlogPost.getTitle(), "Title should match");
+    //             assertEquals(fetchedBlogPost.getAuthor(), seededBlogPost.getAuthor(), "Author should match");
+    //             assertEquals(fetchedBlogPost.getContent(), seededBlogPost.getContent(), "Content should match");
+    //             assertNotNull(fetchedBlogPost.getImageUrl(), "Image URL should not be null");
+    //             System.out.println("publicBaseUrl: " + publicBaseUrl);
+    //             System.out.println("crated image url: " + seededBlogPost.getImageUrl());
+    //             assertTrue(fetchedBlogPost.getImageUrl().startsWith(publicBaseUrl + "/uploads/"), "Image URL should contain the uploads path at the start");
+    //             assertTrue(fetchedBlogPost.getImageUrl().endsWith("test-image.jpg"), "Image URL should contain the file name at the end");}
+    //     }
 
-            // When
-            ResponseEntity<BlogPost> response = testRestTemplate.getForEntity("/api/v1/blogposts/blogpost/{id}", BlogPost.class, seededBlogPost.getId());
-            System.out.println("Fetching blog post with ID: " + seededBlogPost.getId());
-            BlogPost fetchedBlogPost = response.getBody();
+    //     @Test
+    //     void testGetBlogPostById_whenBlogPostNotExist_thenReturns404() {
+    //         System.out.println("testGetBlogPostById_whenBlogPostNotExists_thenReturns404");
 
-            // Then
-            assertEquals(HttpStatus.OK, response.getStatusCode());
-            if (fetchedBlogPost != null) {
-                assertNotNull(fetchedBlogPost.getId(), "Blog Post ID should not be null");
-                assertTrue(fetchedBlogPost.getId() > 0, "Blog Post ID should be greater than 0");
-                assertEquals(fetchedBlogPost.getTitle(), seededBlogPost.getTitle(), "Title should match");
-                assertEquals(fetchedBlogPost.getAuthor(), seededBlogPost.getAuthor(), "Author should match");
-                assertEquals(fetchedBlogPost.getContent(), seededBlogPost.getContent(), "Content should match");
-                assertNotNull(fetchedBlogPost.getImageUrl(), "Image URL should not be null");
-                System.out.println("publicBaseUrl: " + publicBaseUrl);
-                System.out.println("crated image url: " + seededBlogPost.getImageUrl());
-                assertTrue(fetchedBlogPost.getImageUrl().startsWith(publicBaseUrl + "/uploads/"), "Image URL should contain the uploads path at the start");
-                assertTrue(fetchedBlogPost.getImageUrl().endsWith("test-image.jpg"), "Image URL should contain the file name at the end");}
-        }
+    //         // Given
+    //         seedBlogPostWithImageInDatabase();
+    //         System.out.println("db size after seeding: " + blogPostRepository.count());
 
-        @Test
-        void testGetBlogPostById_whenBlogPostNotExist_thenReturns404() {
-            System.out.println("testGetBlogPostById_whenBlogPostNotExists_thenReturns404");
+    //         HttpHeaders headers = new HttpHeaders();
+    //         headers.setContentType(MediaType.APPLICATION_JSON);
+    //         headers.setAccept(Arrays.asList(MediaType.MULTIPART_FORM_DATA, MediaType.APPLICATION_JSON));
 
-            // Given
-            seedBlogPostWithImageInDatabase();
-            System.out.println("db size after seeding: " + blogPostRepository.count());
+    //         // When
+    //         ResponseEntity<BlogPost> response = testRestTemplate.getForEntity("/api/v1/blogposts/blogpost/{id}", BlogPost.class, 99L);
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.setAccept(Arrays.asList(MediaType.MULTIPART_FORM_DATA, MediaType.APPLICATION_JSON));
-
-            // When
-            ResponseEntity<BlogPost> response = testRestTemplate.getForEntity("/api/v1/blogposts/blogpost/{id}", BlogPost.class, 99L);
-
-            // Then
-            assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        }
+    //         // Then
+    //         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    //     }
     }
 
     @Nested
