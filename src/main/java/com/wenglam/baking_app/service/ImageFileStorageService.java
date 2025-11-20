@@ -38,6 +38,8 @@ public class ImageFileStorageService {
         // Resolves to an absolute filesystem path (project working directory by default)
         root = Paths.get(uploadDir).toAbsolutePath().normalize();
         Files.createDirectories(root); 
+
+        log.info("Image upload directory initialized at: {}", root.toString());
     }
 
     /**
