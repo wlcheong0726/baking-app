@@ -24,7 +24,7 @@ public class BlogPostBaseData {
     protected String author;
 
     @NotBlank(message = "Content cannot be empty or contain only whitespaces.")
-     protected String content;
+    protected String content;
 
     protected MultipartFile imageFile;
 }

@@ -25,9 +25,6 @@ public class ImageFileStorageService {
     @Value("${app.upload.dir:uploads}")
     private String uploadDir;
 
-    @Value("${app.public.base-url:http://localhost:8080}") // Base URL for constructing public URLs
-    private String publicBaseUrl;
-
     @Value("${app.upload.allowed-types:image/jpeg,image/png}")
     private List<String> allowedTypes;
 
@@ -41,6 +38,8 @@ public class ImageFileStorageService {
         // Resolves to an absolute filesystem path (project working directory by default)
         root = Paths.get(uploadDir).toAbsolutePath().normalize();
         Files.createDirectories(root); 
+
+        log.info("Image upload directory initialized at: {}", root.toString());
     }
 
     /**
@@ -83,10 +82,8 @@ public class ImageFileStorageService {
         }
 
         String relativeUrl = "/uploads/" + filename;
-        if (publicBaseUrl == null || publicBaseUrl.isBlank()) {
-            return relativeUrl;
-        } 
-            return publicBaseUrl.replaceAll("/$", "") + relativeUrl;
+        
+        return relativeUrl;
     }
 
     private boolean isAllowedContentType(String type) {
