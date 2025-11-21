@@ -93,9 +93,9 @@ public class BlogPostService implements IBlogPostService {
         BlogPost blogPostToBeUpdated = blogPostRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Blog post not found with id " + id));
 
         String imageUrl = null; // For scenarios where pic gets deleted or never was uploaded
-        if (blogPostUpdateData.getImageUrl() != null && blogPostUpdateData.getImageUrl().equals(blogPostToBeUpdated.getImageUrl())) {
+        if (blogPostUpdateData.getImageUrl() != null && blogPostToBeUpdated.getImageUrl() != null) {
             // Handles scenario where the uploaded picture remains the same
-            imageUrl = blogPostUpdateData.getImageUrl(); 
+            imageUrl = blogPostToBeUpdated.getImageUrl(); 
         } else if (blogPostUpdateData.getImageFile() != null && !blogPostUpdateData.getImageFile().isEmpty()) {
             // Handles scenario where the uploaded picture has been changed
             imageUrl = imageFileStorageService.store(blogPostUpdateData.getImageFile());

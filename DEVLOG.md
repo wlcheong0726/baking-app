@@ -226,6 +226,11 @@ BACKEND:
     - TODO: ImageFileStorageService - need to review type of exception thrown with content type.
 
 
+## 17 Oct 2025
+BACKEND:
+- Added constraints tests in BlogPostRepositoryTest to ensure constraint properties are set correctly, if not, exceptions are thrown as expected
+
+
 ## 21 Oct 2025
 BACKEND:
 1. BlogPostController: separated get all blog posts and get blog posts with pagination + search into two endpoints. TODO: need to review and see if separating the two is the best option
