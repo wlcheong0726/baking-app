@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.wenglam.baking_app.dto.BlogPostCreateData;
 import com.wenglam.baking_app.dto.BlogPostUpdateData;
-import com.wenglam.baking_app.dto.PageResponse;
+import com.wenglam.baking_app.dto.PageResponseDto;
 import com.wenglam.baking_app.entity.BlogPost;
 import com.wenglam.baking_app.repository.BlogPostRepository;
 import com.wenglam.baking_app.service.ImageFileStorageService;
@@ -54,7 +54,7 @@ public class BlogPostService implements IBlogPostService {
     }
 
     @Override
-    public PageResponse<BlogPost> getBlogPostsWithConditions(String keyword, Pageable pageable) {
+    public PageResponseDto<BlogPost> getBlogPostsWithConditions(String keyword, Pageable pageable) {
         Page<BlogPost> pageBlogPosts;
         
         if (keyword != null && !keyword.isEmpty()) {
@@ -64,7 +64,7 @@ public class BlogPostService implements IBlogPostService {
             pageBlogPosts = blogPostRepository.findAll(pageable);
         }
 
-        return new PageResponse<BlogPost>(
+        return new PageResponseDto<BlogPost>(
                 pageBlogPosts.getTotalElements(), // total num of elements
                 pageBlogPosts.getContent(), // list of blog posts
                 pageBlogPosts.getNumber() + 1, // current page
