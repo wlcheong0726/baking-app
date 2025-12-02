@@ -2,36 +2,50 @@ package com.wenglam.baking_app.service.impl;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.wenglam.baking_app.dto.PageResponseDto;
 import com.wenglam.baking_app.dto.RecipeResponseDto;
 import com.wenglam.baking_app.external.tasty.TastyClient;
 import com.wenglam.baking_app.external.tasty.TastyListResponseDto;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class RecipeService {
     private final TastyClient tastyClient;
-    private final String apiKey = "";
+    private final String rapidApiHost;
+    private final String apiKey;
 
-    public List<RecipeResponseDto> getDessertRecipes() {
+    public RecipeService(TastyClient tastyClient,
+                         @Value("${tasty.api.rapidapi-host:}") String rapidApiHost,
+                         @Value("${tasty.api.rapidapi-key:}") String apiKey) {
+        this.tastyClient = tastyClient;
+        this.rapidApiHost = rapidApiHost;
+        this.apiKey = apiKey;
+    }
+
+    public PageResponseDto<RecipeResponseDto> getDessertRecipes(String keyword, Pageable pageable) {
         log.info("Fetching dessert recipes from Tasty API");
 
-        TastyListResponseDto dessertRecipes = tastyClient.getDessertRecipes(
-            "tasty.p.rapidapi.com",
+         // Convert frontend inputs to Tasty API parameters
+        int fromIndex = (int) pageable.getOffset(); // page number * page size
+        String query = (keyword != null && !keyword.isEmpty()) ? "dessert " + keyword : "dessert";
+
+        TastyListResponseDto tastyDessertRecipesResponse = tastyClient.getDessertRecipes(
+            rapidApiHost,
             apiKey,
-            0,
-            10,
+            fromIndex,
+            pageable.getPageSize(),
             "",
-            "dessert",
-            ""
+            query,
+            "" // popular by default, other options: approved_at:desc|approved_at:asc - not very useful, to be changed later depending on fronend requirements
         );
 
-        return dessertRecipes.results().stream()
+        List<RecipeResponseDto> dessertRecipeResponseDtos = tastyDessertRecipesResponse.results().stream()
             .map(recipe -> new RecipeResponseDto(
                 recipe.id(),
                 recipe.name(),
@@ -50,6 +64,18 @@ public class RecipeService {
                     instr.temperature())).toList()
             ))
             .toList();
+        
+        int totalElements = tastyDessertRecipesResponse.count();
+        int totalPages = (int) Math.ceil((double) totalElements / pageable.getPageSize());
+        boolean isLast = ((pageable.getPageNumber() + 1) >= totalPages);
+        
+        return new PageResponseDto<>(
+            totalElements,
+            dessertRecipeResponseDtos,
+            pageable.getPageNumber() + 1,
+            dessertRecipeResponseDtos.size(),
+            totalPages,
+            isLast
+        );
     }
-
 }
