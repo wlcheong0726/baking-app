@@ -2,34 +2,30 @@ package com.wenglam.baking_app.service.impl;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.wenglam.baking_app.config.TastyApiProperties;
 import com.wenglam.baking_app.dto.PageResponseDto;
 import com.wenglam.baking_app.dto.RecipeResponseDto;
 import com.wenglam.baking_app.external.tasty.TastyClient;
 import com.wenglam.baking_app.external.tasty.TastyListResponseDto;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@RequiredArgsConstructor
 @Service
 public class RecipeService {
     private final TastyClient tastyClient;
-    private final String rapidApiHost;
-    private final String apiKey;
-
-    public RecipeService(TastyClient tastyClient,
-                         @Value("${tasty.api.rapidapi-host:}") String rapidApiHost,
-                         @Value("${tasty.api.rapidapi-key:}") String apiKey) {
-        this.tastyClient = tastyClient;
-        this.rapidApiHost = rapidApiHost;
-        this.apiKey = apiKey;
-    }
+    private final TastyApiProperties tastyApiProperties;
 
     public PageResponseDto<RecipeResponseDto> getDessertRecipes(String keyword, Pageable pageable) {
         log.info("Fetching dessert recipes from Tasty API");
+
+        String rapidApiHost = tastyApiProperties.getRapidapiHost();
+        String apiKey = tastyApiProperties.getRapidapiKey();
 
          // Convert frontend inputs to Tasty API parameters
         int fromIndex = (int) pageable.getOffset(); // page number * page size
