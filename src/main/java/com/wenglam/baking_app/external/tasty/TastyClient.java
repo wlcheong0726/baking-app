@@ -13,9 +13,9 @@ public interface TastyClient {
         @RequestHeader("X=RapidAPI-Host") String rapidApiHost,
         @RequestHeader("X-RapidAPI-Key") String rapidApiKey,
         @RequestParam(value = "from", required = true, defaultValue = "0") int from, // The offset of items to be ignored in response for paging
-        @RequestParam(value = "size", required = true, defaultValue = "2") int size,
+        @RequestParam(value = "size", required = true, defaultValue = "20") int size,
         @RequestParam(value = "tags", required = false, defaultValue = "") String tags,
         @RequestParam(value = "q", required = false, defaultValue = "dessert") String q,
-        @RequestParam(value = "sort", required = false, defaultValue = "") String sort //Leave empty to sort by popular as default OR one of the following : approved_at:desc|approved_at:asc
+        @RequestParam(value = "sort", required = false, defaultValue = "") String sort //Leave empty to sort by popular as default OR one of the following : approved_at:desc|approved_at:asc - not very useful
     );
 }
