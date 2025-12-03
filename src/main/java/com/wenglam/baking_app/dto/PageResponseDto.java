@@ -10,7 +10,7 @@ import java.util.List;
  * 
  * @param <T> the type of elements contained in the paginated response.
  */
-public record PageResponse<T>(
+public record PageResponseDto<T>(
     long totalElements,
     List<T> content,
     int currentPage,

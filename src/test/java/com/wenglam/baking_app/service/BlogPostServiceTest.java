@@ -22,7 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.wenglam.baking_app.dto.BlogPostCreateData;
 import com.wenglam.baking_app.dto.BlogPostUpdateData;
-import com.wenglam.baking_app.dto.PageResponse;
+import com.wenglam.baking_app.dto.PageResponseDto;
 import com.wenglam.baking_app.entity.BlogPost;
 import com.wenglam.baking_app.repository.BlogPostRepository;
 import com.wenglam.baking_app.service.ImageFileStorageService;
@@ -213,7 +213,7 @@ public class BlogPostServiceTest {
 
             when(blogPostRepositoryMock.searchBlogPosts(keyword,pageable)).thenReturn(pageBlogPosts);
 
-            PageResponse<BlogPost> foundBlogPosts = blogPostService.getBlogPostsWithConditions(keyword, pageable);
+            PageResponseDto<BlogPost> foundBlogPosts = blogPostService.getBlogPostsWithConditions(keyword, pageable);
 
             ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
             verify(blogPostRepositoryMock).searchBlogPosts(eq(keyword), pageableCaptor.capture());
@@ -254,7 +254,7 @@ public class BlogPostServiceTest {
             Page<BlogPost> pageBlogPosts = new PageImpl<>(blogPosts, pageable, 0);
             when(blogPostRepositoryMock.findAll(pageable)).thenReturn(pageBlogPosts);
 
-            PageResponse<BlogPost> foundBlogPosts = blogPostService.getBlogPostsWithConditions(keyword, pageable);
+            PageResponseDto<BlogPost> foundBlogPosts = blogPostService.getBlogPostsWithConditions(keyword, pageable);
 
             ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
             verify(blogPostRepositoryMock).findAll(pageableCaptor.capture());
@@ -292,7 +292,7 @@ public class BlogPostServiceTest {
             Page<BlogPost> pageBlogPosts = new PageImpl<>(blogPosts, pageable, 20);
             when(blogPostRepositoryMock.findAll(pageable)).thenReturn(pageBlogPosts);
 
-            PageResponse<BlogPost> foundBlogPosts = blogPostService.getBlogPostsWithConditions(null, pageable);
+            PageResponseDto<BlogPost> foundBlogPosts = blogPostService.getBlogPostsWithConditions(null, pageable);
 
             assertNotNull(foundBlogPosts);
             assertEquals(blogPosts.size(), foundBlogPosts.content().size());
@@ -322,7 +322,7 @@ public class BlogPostServiceTest {
             Page<BlogPost> pageBlogPosts = new PageImpl<>(filteredBlogPosts, pageable, 11);
             when(blogPostRepositoryMock.searchBlogPosts(keyword,pageable)).thenReturn(pageBlogPosts);
 
-            PageResponse<BlogPost> foundBlogPosts = blogPostService.getBlogPostsWithConditions(keyword, pageable);
+            PageResponseDto<BlogPost> foundBlogPosts = blogPostService.getBlogPostsWithConditions(keyword, pageable);
 
             assertNotNull(foundBlogPosts);
             assertEquals(filteredBlogPosts.size(), foundBlogPosts.content().size());
