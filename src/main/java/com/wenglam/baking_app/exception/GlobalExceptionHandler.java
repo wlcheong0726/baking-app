@@ -31,7 +31,7 @@ public class GlobalExceptionHandler {
                                 HttpStatus.INTERNAL_SERVER_ERROR,
                                 exception.getMessage(),
                                 LocalDateTime.now());
-                
+
                 log.error("500 Unexpected {} {}", httpServletRequest.getMethod(), httpServletRequest.getRequestURI(), exception);
 
                 return ResponseEntity.internalServerError().body(errorResponseDto);
@@ -98,4 +98,51 @@ public class GlobalExceptionHandler {
         }
 
         // TODO: DataIntegrityViolationException - 409
+
+        // Tasty API Exceptions
+        @ExceptionHandler(ApiNotSubscribedException.class) // Http status code: 403
+        public ResponseEntity<ErrorResponseDto> handleApiNotSubscribedException(ApiNotSubscribedException exception,
+                        HttpServletRequest httpServletRequest) {
+                ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                                httpServletRequest.getRequestURI(),
+                                HttpStatus.FORBIDDEN,
+                                exception.getMessage(),
+                                LocalDateTime.now());
+
+                log.warn("403 - Forbidden {} -> {}", httpServletRequest.getRequestURI(), exception.getMessage());
+
+                return new ResponseEntity<>(errorResponseDto, HttpStatus.FORBIDDEN);
+        }
+
+        @ExceptionHandler(TastyRecipeNotFoundException.class) // Http status code: 403
+        public ResponseEntity<ErrorResponseDto> handleTastyRecipeNotFoundException(TastyRecipeNotFoundException exception,
+                        HttpServletRequest httpServletRequest) {
+                ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                                httpServletRequest.getRequestURI(),
+                                HttpStatus.NOT_FOUND,
+                                exception.getMessage(),
+                                LocalDateTime.now());
+
+                log.warn("404 - NOT FOUND {} -> {}", httpServletRequest.getRequestURI(), exception.getMessage());
+
+                return new ResponseEntity<>(errorResponseDto, HttpStatus.NOT_FOUND);
+        }
+
+        @ExceptionHandler(ExternalApiException.class) // Http status code: determined during runtime
+        public ResponseEntity<ErrorResponseDto> handleExternalApiException(ExternalApiException exception,
+                        HttpServletRequest httpServletRequest) {
+
+                        int statusCode = exception.getStatusCode();
+                        HttpStatus httpStatus = HttpStatus.resolve(statusCode) != null ? HttpStatus.resolve(statusCode) : HttpStatus.INTERNAL_SERVER_ERROR;
+
+                ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                                httpServletRequest.getRequestURI(),
+                                httpStatus,
+                                exception.getMessage(),
+                                LocalDateTime.now());
+
+                log.warn(exception.getStatusCode() + " " + httpStatus.getReasonPhrase() + " {} -> {}", httpServletRequest.getRequestURI(), exception.getMessage());
+
+                return new ResponseEntity<>(errorResponseDto, httpStatus);
+        }
 }
