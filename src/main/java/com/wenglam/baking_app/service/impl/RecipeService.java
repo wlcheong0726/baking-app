@@ -69,7 +69,7 @@ public class RecipeService {
             totalElements,
             dessertRecipeResponseDtos,
             pageable.getPageNumber() + 1,
-            dessertRecipeResponseDtos.size(),
+            pageable.getPageSize(),
             totalPages,
             isLast
         );
