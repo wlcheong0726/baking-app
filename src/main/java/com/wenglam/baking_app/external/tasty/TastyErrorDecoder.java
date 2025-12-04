@@ -14,15 +14,14 @@ public class TastyErrorDecoder implements ErrorDecoder {
     @Override
     public Exception decode(String methodKey, Response response) {
 
+        log.info("Method Key: {}. Response: {}", methodKey, response.toString());
+
         switch (response.status()) {
             case 403:
-                log.info("Method Key: {}. Response: {}", methodKey, response.toString());
                 return new ApiNotSubscribedException("You are not subscribed to Tasty API: " + response.status());
             case 404:
-                log.info("Method Key: {}. Response: {}", methodKey, response.toString());
                 return new TastyRecipeNotFoundException("Tasty recipe not found: " + response.status());
             default:
-                log.error("Method Key: {}. Response: {}", methodKey, response.toString());
                 return new ExternalApiException(
                     "Tasty",
                     response.status(),
