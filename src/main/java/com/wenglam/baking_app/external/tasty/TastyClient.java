@@ -5,7 +5,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(name = "tastyClient", url = "https://tasty.p.rapidapi.com/recipes")
+import com.wenglam.baking_app.config.TastyFeignConfig;
+
+@FeignClient(
+    name = "tastyClient",
+    url = "https://tasty.p.rapidapi.com/recipes",
+    configuration = TastyFeignConfig.class)
 public interface TastyClient {
 
     @GetMapping("/list")
