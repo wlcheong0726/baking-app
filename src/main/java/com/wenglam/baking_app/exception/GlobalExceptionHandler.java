@@ -29,7 +29,7 @@ public class GlobalExceptionHandler {
                 ErrorResponseDto errorResponseDto = new ErrorResponseDto(
                                 httpServletRequest.getRequestURI(),
                                 HttpStatus.INTERNAL_SERVER_ERROR,
-                                exception.getMessage(),
+                                exception.getMessage(), // TODO: remove in production
                                 LocalDateTime.now());
 
                 log.error("500 Unexpected {} {}", httpServletRequest.getMethod(), httpServletRequest.getRequestURI(), exception);
@@ -46,7 +46,7 @@ public class GlobalExceptionHandler {
 
                 ErrorResponseDto errorResponseDto = new ErrorResponseDto(
                                 httpServletRequest.getRequestURI(),
-                                HttpStatus.INTERNAL_SERVER_ERROR,
+                                HttpStatus.BAD_REQUEST,
                                 errors.toString(),
                                 LocalDateTime.now());
                 
@@ -114,7 +114,7 @@ public class GlobalExceptionHandler {
                 return new ResponseEntity<>(errorResponseDto, HttpStatus.FORBIDDEN);
         }
 
-        @ExceptionHandler(TastyRecipeNotFoundException.class) // Http status code: 403
+        @ExceptionHandler(TastyRecipeNotFoundException.class) // Http status code: 404
         public ResponseEntity<ErrorResponseDto> handleTastyRecipeNotFoundException(TastyRecipeNotFoundException exception,
                         HttpServletRequest httpServletRequest) {
                 ErrorResponseDto errorResponseDto = new ErrorResponseDto(
