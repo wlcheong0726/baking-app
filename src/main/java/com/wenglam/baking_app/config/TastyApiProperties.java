@@ -17,6 +17,14 @@ public class TastyApiProperties {
 
     @PostConstruct
     public void init() {
-        log.info("TastyApiProperties initialized with rapidApiHost: " + rapidapiHost + " and rapidApiKey: " + rapidapiKey);
+        if (rapidapiHost == null || rapidapiHost.isEmpty()) {
+            log.warn("TastyApiProperties: rapidApiHost is not set. Make sure to set it in production.");
+        }
+
+        if (rapidapiKey == null || rapidapiKey.isEmpty()) {
+            log.warn("TastyApiProperties: rapidApiKey is not set. Make sure to set it in production.");
+        }
+
+        log.info("TastyApiProperties initialized with rapidApiHost: " + rapidapiHost + " and rapidApiKey.");
     }
  }
