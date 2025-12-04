@@ -4,5 +4,4 @@ public class TastyRecipeNotFoundException extends RuntimeException {
     public TastyRecipeNotFoundException(String message) {
         super(message);
     }
-    
 }
